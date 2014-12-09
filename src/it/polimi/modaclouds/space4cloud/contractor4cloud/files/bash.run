@@ -1,0 +1,4 @@
+rm %s/%s
+rm %1$s/%s
+cd %s
+./ampl %1$s/%s;

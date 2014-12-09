@@ -1,0 +1,39 @@
+cd %s;
+reset;
+option log_file '%s';
+
+model %s;
+data %s;
+option solver '%s';
+option show_stats 1;
+option timelimit 720;
+option cplex_options 'timing=1';
+printf "SOLVING CONTRACTS PROBLEM\n";
+solve;
+
+if (match (solve_message, "no feasible") > 0)|| (match (solve_message, "infeasible") > 0)  then {
+printf"Parameters are too stringent.  No feasible solution for the problem\n";
+printf"Analysis termination\n";
+}
+else printf("Solution Feasible!\n");
+
+display D > %6$s;
+display S > %6$s;
+display R > %6$s;
+display X > %6$s;
+display Y > %6$s;
+
+display {t in TIME_INT: D[t] >= 1}:
+	D[t] > %6$s;
+display {t in TIME_INT: S[t] >= 1}:
+    S[t] > %6$s;
+display {c in CONTRACT, t in TIME_INT: R[c,t] >= 1}:
+    R[c,t] > %6$s;
+display {c in CONTRACT: X[c] >= 1}:
+    X[c] > %6$s;
+display {c in CONTRACT: Y[c] == 1}:
+    Y[c] > %6$s;
+
+option log_file '';
+close %6$s;
+close %2$s;
