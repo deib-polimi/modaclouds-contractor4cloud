@@ -58,7 +58,8 @@ public class SshConnector {
 						Configuration.RUN_WORKING_DIRECTORY,
 						Configuration.RUN_MODEL));
 		
-		newExecSSH.mainExec();
+		for (int i = 1; i <= datas; ++i)
+			newExecSSH.mainExec("bash " + Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.DEFAULTS_BASH + "-" + i);
 
 		// this block downloads logs and results of AMPL
 		ScpFrom newScpFrom = new ScpFrom();

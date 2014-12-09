@@ -78,7 +78,7 @@ public class Contractor {
 		if (path == null)
 			path = Paths.get(Configuration.PROJECT_BASE_FOLDER, Configuration.WORKING_DIRECTORY);
 		
-		solutions = Result.parse(solution, datas, path);
+		solutions = Result.parse(solution, path, daysConsidered);
 		
 		if (removeTempFiles)
 			cleanFiles();

@@ -80,7 +80,7 @@ public class Configuration {
 		
 		prop.put("DEFAULTS_BASH", DEFAULTS_BASH);
 		
-		prop.store(fos, "S4C-PrivateCloud configuration properties");
+		prop.store(fos, "S4C-Contractor configuration properties");
 		fos.flush();
 	}
 	

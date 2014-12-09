@@ -1,6 +1,8 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 import it.polimi.modaclouds.space4cloud.generated.costs.Costs;
 import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers;
@@ -19,12 +21,19 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 public class Result {
-	private SolutionMulti solution;
+	private ProblemInstance pi;
 	private Path path;
+	private int daysConsidered;
 	
-	public Result(SolutionMulti solution, Path path) {
-		this.solution = solution;
+	private Costs costs;
+	
+	public Result(ProblemInstance pi, Path path, int daysConsidered) {
+		this.pi = pi;
 		this.path = path;
+		this.daysConsidered = daysConsidered;
+		
+		costs = new Costs();
+		costs.setSolutionID(hashCode() + "");
 	}
 	
 	public void parse(String file) {
@@ -43,22 +52,6 @@ public class Result {
 	}
 	
 	public File export(int i) {
-		Costs c = new Costs();
-		c.setSolutionID(hashCode() + "");
-		
-		
-		Providers p = new Providers();
-		
-		Contract contract = new Contract();
-		contract.setContractType("");
-		contract.setHourCost(0);
-		contract.setInstanceType("");
-		contract.setReplicas(0);
-		
-		p.getContract().add(contract);
-		
-		c.getProviders().add(p);
-		
 		try {
 			// create JAXB context and instantiate marshaller
 			JAXBContext context = JAXBContext
@@ -70,7 +63,10 @@ public class Result {
 //			m.marshal(rme, System.out);
 
 			// Write to File
-			m.marshal(c, Paths.get(path.toString(), "costs-" + i + ".xml").toFile());
+			File f = Paths.get(path.toString(), "costs-" + pi.getResourceName() + ".xml").toFile();
+			m.marshal(costs, f);
+			
+			return f;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -78,11 +74,12 @@ public class Result {
 		return null;
 	}
 	
-	public static List<File> parse(SolutionMulti solution, int datas, Path path) {
+	public static List<File> parse(SolutionMulti solution, Path path, int daysConsidered) {
 		List<File> res = new ArrayList<File>();
-		for (int i = 1; i <= datas; ++i) {
-			Result result = new Result(solution, path);
-			result.parse(Configuration.RUN_RES + "-" + i);
+		List<ProblemInstance> pis = ProblemInstance.getProblemInstances(solution);
+		for (int i = 0; i < pis.size(); ++i) {
+			Result result = new Result(pis.get(i), path, daysConsidered);
+			result.parse(Configuration.RUN_RES + "-" + (i+1));
 			res.add(result.export(i));
 		}
 		return res;
@@ -113,6 +110,25 @@ public class Result {
 			int t = Integer.parseInt(ss[3].substring(1)) - 1;
 			
 			int value = Integer.parseInt(s.split("=")[1].trim());
+			
+			Contract contract = new Contract();
+			contract.setHourCost((float)pi.getHourlyCostsReserved().get(c).doubleValue());
+			contract.setInitialCost((float)pi.getInitialCostsReserved(daysConsidered).get(c).doubleValue());
+			contract.setReplicas(pi.getReplicas()[t]);
+			int i = 0;
+			for (QueryDictionary.ReservedYears ry : QueryDictionary.ReservedYears.values())
+				for (QueryDictionary.ReservedUsage ru : QueryDictionary.ReservedUsage.values()) {
+					if (i == c)
+						contract.setContractType(ry.getName() + " " + ru.getName());
+					i++;
+				}
+			contract.setInstanceType(pi.getResourceName());
+			
+			Providers p = new Providers();
+			p.setCost(1.0f);
+			p.getContract().add(contract);
+			
+			costs.getProviders().add(p);
 			
 			System.out.printf("R: %d, %d, %d\n", c, t, value);
 		}
