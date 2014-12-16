@@ -19,7 +19,7 @@ public class Run {
 			
 //			String baseFile = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(Configuration.RUN_FILE).toURI())));
 			
-			Scanner sc = new Scanner(this.getClass().getResourceAsStream(Configuration.RUN_FILE));
+			Scanner sc = new Scanner(this.getClass().getResourceAsStream("/" + Configuration.RUN_FILE));
 			
 			while (sc.hasNextLine())
 				baseFile += sc.nextLine() + "\n";
