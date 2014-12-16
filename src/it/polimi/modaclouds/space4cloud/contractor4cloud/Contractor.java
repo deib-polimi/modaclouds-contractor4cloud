@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Calendar;
-import java.util.List;
 
 public class Contractor {
 	
@@ -60,11 +59,11 @@ public class Contractor {
 				);
 	}
 	
-	private List<File> solutions = null;
+	private File solutionFile = null;
 	
-	public List<File> getSolutions(Path path) {
-		if (solutions != null)
-			return solutions;
+	public File getSolutions(Path path) {
+		if (solutionFile != null)
+			return solutionFile;
 		
 		Configuration.RUN_WORKING_DIRECTORY = Configuration.DEFAULTS_WORKING_DIRECTORY + "/" + getDate();
 		
@@ -78,15 +77,15 @@ public class Contractor {
 		if (path == null)
 			path = Paths.get(Configuration.PROJECT_BASE_FOLDER, Configuration.WORKING_DIRECTORY);
 		
-		solutions = Result.parse(solution, path, daysConsidered);
+		solutionFile = Result.parse(solution, path, daysConsidered);
 		
 		if (removeTempFiles)
 			cleanFiles();
 		
-		return solutions;
+		return solutionFile;
 	}
 	
-	public List<File> getSolutions() {
+	public File getSolutions() {
 		return getSolutions(null);
 	}
 	
@@ -105,7 +104,7 @@ public class Contractor {
 		}
 	}
 
-	public static List<File> perform(String configurationFile, String solutionFile, String basePath, int daysConsidered, double percentageOfS, double m) {
+	public static File perform(String configurationFile, String solutionFile, String basePath, int daysConsidered, double percentageOfS, double m) {
 		Contractor pc = new Contractor(configurationFile, solutionFile, daysConsidered, percentageOfS, m);
 		
 		Path path = null;
@@ -119,7 +118,7 @@ public class Contractor {
 		
 	}
 	
-	public static List<File> perform(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) {
+	public static File perform(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) {
 		return perform(configurationFile, solutionFile, null, daysConsidered, percentageOfS, m);
 	}
 }

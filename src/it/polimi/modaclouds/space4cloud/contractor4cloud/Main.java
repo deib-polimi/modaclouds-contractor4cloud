@@ -1,7 +1,6 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud;
 
 import java.io.File;
-import java.util.List;
 
 public class Main {
 
@@ -17,13 +16,10 @@ public class Main {
 		double percentageOfS = 0.5;
 		double m = 1000.0;
 		
-		List<File> files = Contractor.perform(configuration, solution, daysConsidered, percentageOfS, m);
-		boolean done = false;
-		for (File f : files) {
+		File f = Contractor.perform(configuration, solution, daysConsidered, percentageOfS, m);
+		if (f != null && f.exists())
 			System.out.println("Solution: " + f.getAbsolutePath());
-			done = true;
-		}
-		if (!done)
+		else
 			System.out.println("No solution!");
 	}
 	

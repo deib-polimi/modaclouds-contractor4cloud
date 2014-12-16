@@ -48,6 +48,10 @@ public class ProblemInstance {
 		return replicas;
 	}
 	
+	public String getServiceName() {
+		return serviceName;
+	}
+	
 	private Double costOnDemand = null;
 	private Double costOnSpot = null;
 	private List<Double> hourlyCostReserved = null;

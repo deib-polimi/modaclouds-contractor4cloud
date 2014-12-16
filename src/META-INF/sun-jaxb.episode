@@ -5,7 +5,7 @@
 Questo file è stato generato dall'architettura JavaTM per XML Binding (JAXB) Reference Implementation, v2.2.11 
 Vedere <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 Qualsiasi modifica a questo file andrà persa durante la ricompilazione dello schema di origine. 
-Generato il: 2014.12.09 alle 10:52:28 PM CET 
+Generato il: 2014.12.16 alle 03:50:24 PM CET 
 
   -->
   <bindings scd="x-schema::tns" xmlns:tns="http://www.modaclouds.eu/xsd/2014/11/costs">
@@ -14,6 +14,15 @@ Generato il: 2014.12.09 alle 10:52:28 PM CET
     </schemaBindings>
     <bindings scd="tns:Costs">
       <class ref="it.polimi.modaclouds.space4cloud.generated.costs.Costs"/>
+    </bindings>
+    <bindings scd="~tns:costType">
+      <class ref="it.polimi.modaclouds.space4cloud.generated.costs.CostType"/>
+    </bindings>
+    <bindings scd="~tns:hourPriceType">
+      <class ref="it.polimi.modaclouds.space4cloud.generated.costs.HourPriceType"/>
+    </bindings>
+    <bindings scd="~tns:ContractType">
+      <class ref="it.polimi.modaclouds.space4cloud.generated.costs.ContractType"/>
     </bindings>
   </bindings>
 </bindings>

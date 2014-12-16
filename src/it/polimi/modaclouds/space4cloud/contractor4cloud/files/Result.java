@@ -4,16 +4,21 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
+import it.polimi.modaclouds.space4cloud.generated.costs.ContractType;
+import it.polimi.modaclouds.space4cloud.generated.costs.CostType;
 import it.polimi.modaclouds.space4cloud.generated.costs.Costs;
 import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers;
-import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers.Contract;
+import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers.SpotRequests;
+import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers.SpotRequests.HourRequest;
+import it.polimi.modaclouds.space4cloud.generated.costs.HourPriceType;
 
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -27,8 +32,8 @@ public class Result {
 	
 	private Costs costs;
 	
-	public Result(ProblemInstance pi, Path path, int daysConsidered) {
-		this.pi = pi;
+	public Result(Path path, int daysConsidered) {
+		pi = null;
 		this.path = path;
 		this.daysConsidered = daysConsidered;
 		
@@ -36,7 +41,9 @@ public class Result {
 		costs.setSolutionID(hashCode() + "");
 	}
 	
-	public void parse(String file) {
+	public void parse(ProblemInstance pi, String file) {
+		this.pi = pi;
+		
 		try {
 			Scanner in = new Scanner(new FileReader(file));
 			
@@ -51,7 +58,7 @@ public class Result {
 		}
 	}
 	
-	public File export(int i) {
+	public File export() {
 		try {
 			// create JAXB context and instantiate marshaller
 			JAXBContext context = JAXBContext
@@ -63,7 +70,7 @@ public class Result {
 //			m.marshal(rme, System.out);
 
 			// Write to File
-			File f = Paths.get(path.toString(), "costs-" + pi.getResourceName() + ".xml").toFile();
+			File f = Paths.get(path.toString(), "costs.xml").toFile();
 			m.marshal(costs, f);
 			
 			return f;
@@ -74,15 +81,44 @@ public class Result {
 		return null;
 	}
 	
-	public static List<File> parse(SolutionMulti solution, Path path, int daysConsidered) {
-		List<File> res = new ArrayList<File>();
+	public static File parse(SolutionMulti solution, Path path, int daysConsidered) {
 		List<ProblemInstance> pis = ProblemInstance.getProblemInstances(solution);
+		Result result = new Result(path, daysConsidered);
 		for (int i = 0; i < pis.size(); ++i) {
-			Result result = new Result(pis.get(i), path, daysConsidered);
-			result.parse(Configuration.RUN_RES + "-" + (i+1));
-			res.add(result.export(i));
+			result.parse(pis.get(i), Configuration.RUN_RES + "-" + (i+1));
 		}
-		return res;
+		return result.export();
+	}
+	
+	private Map<String, Providers> providers = new HashMap<String, Providers>();
+	private Map<String, SpotRequests> spotRequests = new HashMap<String, SpotRequests>();
+	
+	private Providers getActualProvider() {
+		Providers p = providers.get(pi.getProvider());
+		if (p == null) {
+			p = new Providers();
+			p.setName(pi.getProvider());
+			p.setServiceName(pi.getServiceName());
+			
+			costs.getProviders().add(p);
+			providers.put(pi.getProvider(), p);
+		}
+		
+		CostType ctp = p.getCost();
+		if (ctp == null) {
+			ctp = new CostType();
+			ctp.setTotalCost(0.0f);
+			p.setCost(ctp);
+			
+			for (int h = 0; h < 24; ++h) {
+				HourPriceType hour = new HourPriceType();
+				hour.setHour(h);
+				hour.setCost(0.0f);
+				ctp.getHourPrice().add(hour);
+			}
+		}
+		
+		return p;
 	}
 	
 	public void match(String s) {
@@ -93,6 +129,20 @@ public class Result {
 			
 			int value = Integer.parseInt(s.split("=")[1].trim());
 			
+			Providers p = getActualProvider();
+			CostType ctp = p.getCost();
+			
+			HourPriceType hour = null;
+			for (HourPriceType h : ctp.getHourPrice())
+				if (h.getHour() == t)
+					hour = h;
+			
+			float cost = pi.getCostOnDemand().floatValue() * value;
+			
+			hour.setCost(hour.getCost() + cost);
+
+			ctp.setTotalCost(ctp.getTotalCost() + cost);
+			
 			System.out.printf("D: %d, %d\n", t, value);
 			
 		} else if (Pattern.matches("S\\['t[0-9]+'\\] = [0-9]+", s)) {
@@ -102,35 +152,58 @@ public class Result {
 			
 			int value = Integer.parseInt(s.split("=")[1].trim());
 			
+			Providers p = getActualProvider();
+			
+			SpotRequests requests = spotRequests.get(pi.getResourceName());
+			if (requests == null) {
+				requests = new SpotRequests();
+				p.getSpotRequests().add(requests);
+				spotRequests.put(pi.getResourceName(), requests);
+			}
+			
+			HourRequest request = new HourRequest();
+			request.setHour(t);
+			request.setInstanceType(pi.getResourceName());
+			request.setReplicas(value);
+			request.setExpectedHourCost(pi.getCostOnSpot().floatValue() * value);
+			
+			requests.getHourRequest().add(request);
+			
 			System.out.printf("S: %d, %d\n", t, value);
 		} else if (Pattern.matches("R\\['c[0-9]+','t[0-9]+'\\] = [0-9]+", s)) {
+//			String[] ss = s.split("'");
+//			
+//			int c = Integer.parseInt(ss[1].substring(1)) - 1;
+//			int t = Integer.parseInt(ss[3].substring(1)) - 1;
+//			
+//			int value = Integer.parseInt(s.split("=")[1].trim());
+//			
+//			System.out.printf("R: %d, %d, %d\n", t, c, value);
+		} else if (Pattern.matches("X\\['c[0-9]+'\\] = [0-9]+", s)) {
 			String[] ss = s.split("'");
 			
 			int c = Integer.parseInt(ss[1].substring(1)) - 1;
-			int t = Integer.parseInt(ss[3].substring(1)) - 1;
 			
 			int value = Integer.parseInt(s.split("=")[1].trim());
 			
-			Contract contract = new Contract();
-			contract.setHourCost((float)pi.getHourlyCostsReserved().get(c).doubleValue());
-			contract.setInitialCost((float)pi.getInitialCostsReserved(daysConsidered).get(c).doubleValue());
-			contract.setReplicas(pi.getReplicas()[t]);
+			Providers p = getActualProvider();
+			
+			ContractType contract = new ContractType();
+			contract.setHourCost(pi.getHourlyCostsReserved().get(c).floatValue());
+			contract.setInitialCost(pi.getInitialCostsReserved(daysConsidered).get(c).floatValue());
+			contract.setReplicas(value);
 			int i = 0;
 			for (QueryDictionary.ReservedYears ry : QueryDictionary.ReservedYears.values())
 				for (QueryDictionary.ReservedUsage ru : QueryDictionary.ReservedUsage.values()) {
 					if (i == c)
-						contract.setContractType(ry.getName() + " " + ru.getName());
+						contract.setContractType(ry.getName() + "_" + ru.getName());
 					i++;
 				}
 			contract.setInstanceType(pi.getResourceName());
 			
-			Providers p = new Providers();
-			p.setCost(1.0f);
 			p.getContract().add(contract);
 			
-			costs.getProviders().add(p);
-			
-			System.out.printf("R: %d, %d, %d\n", c, t, value);
+			System.out.printf("X: %d, %d\n", c, value);
 		}
 	}
 }
