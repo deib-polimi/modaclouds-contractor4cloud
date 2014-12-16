@@ -47,6 +47,8 @@ public class Configuration {
 	
 	public static String DEFAULTS_BASH = "bash.run";
 	
+	public static String GENERATED_COSTS = "generated-costs.xml";
+	
 	public static void saveConfiguration(String filePath) throws IOException{
 		FileOutputStream fos = new FileOutputStream(filePath);
 		Properties prop = new Properties();

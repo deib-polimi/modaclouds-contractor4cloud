@@ -70,7 +70,7 @@ public class Result {
 //			m.marshal(rme, System.out);
 
 			// Write to File
-			File f = Paths.get(path.toString(), "costs.xml").toFile();
+			File f = Paths.get(path.toString(), Configuration.GENERATED_COSTS).toFile();
 			m.marshal(costs, f);
 			
 			return f;
