@@ -1,16 +1,16 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
+import it.polimi.modaclouds.qos_models.schema.ContractType;
+import it.polimi.modaclouds.qos_models.schema.CostType;
+import it.polimi.modaclouds.qos_models.schema.Costs;
+import it.polimi.modaclouds.qos_models.schema.Costs.Providers;
+import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
+import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
+import it.polimi.modaclouds.qos_models.schema.HourPriceType;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
-import it.polimi.modaclouds.space4cloud.generated.costs.ContractType;
-import it.polimi.modaclouds.space4cloud.generated.costs.CostType;
-import it.polimi.modaclouds.space4cloud.generated.costs.Costs;
-import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers;
-import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers.SpotRequests;
-import it.polimi.modaclouds.space4cloud.generated.costs.Costs.Providers.SpotRequests.HourRequest;
-import it.polimi.modaclouds.space4cloud.generated.costs.HourPriceType;
 
 import java.io.File;
 import java.io.FileReader;
