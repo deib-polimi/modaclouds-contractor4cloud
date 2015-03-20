@@ -22,11 +22,18 @@ public class ModelCMPL extends Model {
 			
 			sc.close();
 			
+			int threads = Configuration.CMPL_THREADS;
+			if (Configuration.SSH_HOST.equals("localhost") || Configuration.SSH_HOST.equals("127.0.0.1")) {
+				threads = Runtime.getRuntime().availableProcessors() - 1;
+				if (threads <= 0)
+					threads = 1;
+			}
+			
 			out.print(String.format(baseFile,
 					Configuration.RUN_SOLVER_CMPL,
 					Configuration.RUN_RES_CMPL + "-" + i,
 					Configuration.RUN_DATA_CMPL + "-" + i,
-					Configuration.CMPL_THREADS));
+					threads));
 			
 			out.flush();
 			out.close();

@@ -46,30 +46,30 @@ public class DataCMPL extends Data {
 			
 			out.printf("%%CostD < %s >\n", doubleFormatter.format(pi.getCostOnDemand()));
 			
-			out.print("%%CostS[TIME_INT] default 0 <");
+			out.print("%%CostS[TIME_INT] = 0 indices <");
 			for (int i = 1; i <= 24; ++i)
-				out.printf(" %s", doubleFormatter.format(pi.getCostOnSpot()));
-			out.println(" >");
+				out.printf("\nt%s %s", timeIntFormatter.format(i), doubleFormatter.format(pi.getCostOnSpot()));
+			out.println("\n>");
 			
-			out.print("%%CostR[CONTRACT] default 0 <");
+			out.print("%%CostR[CONTRACT] = 0 indices <");
 			List<Double> hourlyReserved = pi.getHourlyCostsReserved();
 			for (int i = 0; i < hourlyReserved.size(); ++i) {
-				out.printf(" %s", doubleFormatter.format(hourlyReserved.get(i)));
+				out.printf("\nc%s %s", contractFormatter.format(i+1), doubleFormatter.format(hourlyReserved.get(i)));
 			}
-			out.println(" >");
+			out.println("\n>");
 			
-			out.print("%%InitialCostR[CONTRACT] default 0 <");
+			out.print("%%InitialCostR[CONTRACT] = 0 indices <");
 			List<Double> initialReserved = pi.getInitialCostsReserved(daysConsidered);
 			for (int i = 0; i < initialReserved.size(); ++i) {
-				out.printf(" %s", doubleFormatter.format(initialReserved.get(i)));
+				out.printf("\nc%s %s", contractFormatter.format(i+1), doubleFormatter.format(initialReserved.get(i)));
 			}
-			out.println(" >");
+			out.println("\n>");
 			
-			out.print("%%Instances[TIME_INT] default 0 <");
+			out.print("%%Instances[TIME_INT] = 0 indices <");
 			int replicas[] = pi.getReplicas();
 			for (int i = 0; i < replicas.length; ++i)
-				out.printf(" %d", replicas[i]);
-			out.println(" >");
+				out.printf("\nt%s %d", timeIntFormatter.format(i+1), replicas[i]);
+			out.println("\n>");
 			
 			out.flush();
 			out.close();
