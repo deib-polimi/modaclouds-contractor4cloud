@@ -24,7 +24,7 @@ public class ModelCMPL extends Model {
 			
 			out.print(String.format(baseFile,
 					Configuration.RUN_SOLVER_CMPL,
-					Configuration.RUN_RES_CMPL,
+					Configuration.RUN_RES_CMPL + "-" + i,
 					Configuration.RUN_DATA_CMPL + "-" + i,
 					Configuration.CMPL_THREADS));
 			
