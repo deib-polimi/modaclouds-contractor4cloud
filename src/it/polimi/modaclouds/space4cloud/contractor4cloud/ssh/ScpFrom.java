@@ -19,6 +19,7 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud.ssh;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +35,15 @@ public class ScpFrom {
 	// main execution function
 	// coping RFile on AMPL server in LFile on local machine
 	public void receivefile(String LFile, String RFile) {
+		
+		if (Configuration.isRunningLocally())
+			try {
+				localReceivefile(LFile, RFile);
+				return;
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+		
 		FileOutputStream fos = null;
 		try {
 
@@ -179,4 +189,19 @@ public class ScpFrom {
 		}
 		return b;
 	}
+	
+	public void localReceivefile(String LFile, String RFile) throws FileNotFoundException {
+		if (!new File(RFile).exists())
+			throw new FileNotFoundException("File " + RFile + " not found!");
+		
+		ExecSSH ex = new ExecSSH();
+		
+		if (new File(LFile).exists() && new File(LFile).isDirectory() && !LFile.endsWith(File.separator))
+			LFile = LFile + File.separator;
+		
+		String command = String.format("cp %s %s", RFile, LFile);
+		ex.localExec(command);
+		
+	}
+	
 }

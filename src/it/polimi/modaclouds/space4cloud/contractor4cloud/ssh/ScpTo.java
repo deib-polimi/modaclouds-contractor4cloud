@@ -20,6 +20,7 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,6 +35,15 @@ public class ScpTo {
 	// main execution function
 	// coping LFile on local machine in RFile on AMPL server
 	public void sendfile(String LFile, String RFile) {
+		
+		if (Configuration.isRunningLocally())
+			try {
+				localSendfile(LFile, RFile);
+				return;
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+		
 		FileInputStream fis = null;
 		try {
 			String lfile = LFile;
@@ -199,4 +209,18 @@ public class ScpTo {
 //			return null;
 //		}
 //	}
+	
+	public void localSendfile(String LFile, String RFile) throws FileNotFoundException {
+		if (!new File(LFile).exists())
+			throw new FileNotFoundException("File " + LFile + " not found!");
+		
+		ExecSSH ex = new ExecSSH();
+		
+		if (new File(RFile).exists() && new File(RFile).isDirectory() && !RFile.endsWith(File.separator))
+			RFile = RFile + File.separator;
+		
+		String command = String.format("cp %s %s", LFile, RFile);
+		ex.localExec(command);
+		
+	}
 }

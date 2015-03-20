@@ -193,4 +193,8 @@ public class Configuration {
 		MATH_SOLVER = Solver.getByName(prop.getProperty("MATH_SOLVER", MATH_SOLVER.getName()));
 		
 	}
+	
+	public static boolean isRunningLocally() {
+		return (SSH_HOST.equals("localhost") || SSH_HOST.equals("127.0.0.1"));
+	}
 }

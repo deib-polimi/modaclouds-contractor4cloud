@@ -23,7 +23,7 @@ public class ModelCMPL extends Model {
 			sc.close();
 			
 			int threads = Configuration.CMPL_THREADS;
-			if (Configuration.SSH_HOST.equals("localhost") || Configuration.SSH_HOST.equals("127.0.0.1")) {
+			if (Configuration.isRunningLocally()) {
 				threads = Runtime.getRuntime().availableProcessors() - 1;
 				if (threads <= 0)
 					threads = 1;
