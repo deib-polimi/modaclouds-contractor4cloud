@@ -34,15 +34,12 @@ import com.jcraft.jsch.Session;
 public class ScpTo {
 	// main execution function
 	// coping LFile on local machine in RFile on AMPL server
-	public void sendfile(String LFile, String RFile) {
+	public void sendfile(String LFile, String RFile) throws Exception {
 		
-		if (Configuration.isRunningLocally())
-			try {
+		if (Configuration.isRunningLocally()) {
 				localSendfile(LFile, RFile);
 				return;
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
+		}
 		
 		FileInputStream fis = null;
 		try {

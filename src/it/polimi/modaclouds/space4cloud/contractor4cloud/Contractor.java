@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.List;
 
 public class Contractor {
 	
@@ -61,23 +62,47 @@ public class Contractor {
 	
 	private File solutionFile = null;
 	
-	public File getSolutions(Path path) {
+	public File getSolutions(Path path) throws Contractor4CloudException {
+		List<String> errors = Configuration.checkValidity(); 
+		if (errors.size() == 1)
+			throw new Contractor4CloudException("There is 1 problem with the configuration:\n- " + errors.get(0)); 
+		else if (errors.size() > 1) {
+			String message = "There are " + errors.size() + " problems with the configuration:";
+			for (String s : errors)
+				message += "\n- " + s;
+			throw new Contractor4CloudException(message);
+		}
+		
 		if (solutionFile != null)
 			return solutionFile;
 		
 		Configuration.RUN_WORKING_DIRECTORY = Configuration.DEFAULTS_WORKING_DIRECTORY + "/" + getDate();
 		
-		int datas = Data.print(solution, daysConsidered, percentageOfS, m);
-		Run.print(datas);
-		Model.print(datas);
-		Bash.print(datas);
+		int datas = 0;
 		
-		SshConnector.run(datas);
+		try {
+			datas = Data.print(solution, daysConsidered, percentageOfS, m);
+			Run.print(datas);
+			Model.print(datas);
+			Bash.print(datas);
+		} catch (Exception e) {
+			throw new Contractor4CloudException("Error when creating the problem files.", e);
+		}
+		
+		try {
+			SshConnector.run(datas);
+		} catch (Exception e) {
+			throw new Contractor4CloudException("Error when sending or receiving file or when executing the script.", e);
+		}
 		
 		if (path == null)
 			path = Paths.get(Configuration.PROJECT_BASE_FOLDER, Configuration.WORKING_DIRECTORY);
 		
-		solutionFile = Result.parse(solution, path, daysConsidered);
+		try {
+			solutionFile = Result.parse(solution, path, daysConsidered);
+		} catch (Exception e) {
+			throw new Contractor4CloudException("Error when parsing the solution.", e);
+		}
 		
 		if (removeTempFiles)
 			cleanFiles();
@@ -85,7 +110,7 @@ public class Contractor {
 		return solutionFile;
 	}
 	
-	public File getSolutions() {
+	public File getSolutions() throws Contractor4CloudException {
 		return getSolutions(null);
 	}
 	
@@ -104,7 +129,7 @@ public class Contractor {
 		}
 	}
 
-	public static File perform(String configurationFile, String solutionFile, String basePath, int daysConsidered, double percentageOfS, double m) {
+	public static File perform(String configurationFile, String solutionFile, String basePath, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
 		Contractor pc = new Contractor(configurationFile, solutionFile, daysConsidered, percentageOfS, m);
 		
 		Path path = null;
@@ -118,7 +143,7 @@ public class Contractor {
 		
 	}
 	
-	public static File perform(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) {
+	public static File perform(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
 		return perform(configurationFile, solutionFile, null, daysConsidered, percentageOfS, m);
 	}
 }

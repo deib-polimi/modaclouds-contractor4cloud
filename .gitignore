@@ -1,3 +1,10 @@
 /bin
 /target
 .DS_Store
+/*.run*
+/*.cdat*
+/*.dat*
+/*.cmpl*
+/*.mod
+/*.log*
+/*.sol*

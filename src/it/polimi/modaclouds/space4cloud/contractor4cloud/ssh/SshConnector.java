@@ -36,11 +36,11 @@ public abstract class SshConnector {
 		newScpFrom = new ScpFrom();
 	}
 	
-	private void sendFile(String localFile, String remoteFile) {
+	private void sendFile(String localFile, String remoteFile) throws Exception {
 		newScpTo.sendfile(localFile, remoteFile);
 	}
 	
-	public void sendFileToWorkingDir(String file) {
+	public void sendFileToWorkingDir(String file) throws Exception {
 		sendFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
 		fixFile(Configuration.RUN_WORKING_DIRECTORY, file);
 	}
@@ -49,11 +49,11 @@ public abstract class SshConnector {
 		newExecSSH.mainExec(command);
 	}
 	
-	private void receiveFile(String localFile, String remoteFile) {
+	private void receiveFile(String localFile, String remoteFile) throws Exception {
 		newScpFrom.receivefile(localFile, remoteFile);
 	}
 	
-	public void receiveFileFromWorkingDir(String file) {
+	public void receiveFileFromWorkingDir(String file) throws Exception {
 		receiveFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
 	}
 	
@@ -64,7 +64,7 @@ public abstract class SshConnector {
 	}
 	
 	// main execution function
-	public static void run(int datas) {
+	public static void run(int datas) throws Exception {
 		switch (Configuration.MATH_SOLVER) {
 		case AMPL:
 			SshConnectorAMPL.run(datas);
@@ -76,6 +76,6 @@ public abstract class SshConnector {
 		
 	}
 	
-	public abstract void execute(int datas);
+	public abstract void execute(int datas) throws Exception;
 
 }

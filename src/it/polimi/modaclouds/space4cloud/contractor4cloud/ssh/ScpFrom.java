@@ -34,15 +34,12 @@ import com.jcraft.jsch.Session;
 public class ScpFrom {
 	// main execution function
 	// coping RFile on AMPL server in LFile on local machine
-	public void receivefile(String LFile, String RFile) {
+	public void receivefile(String LFile, String RFile) throws Exception {
 		
-		if (Configuration.isRunningLocally())
-			try {
-				localReceivefile(LFile, RFile);
-				return;
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			}
+		if (Configuration.isRunningLocally()) {
+			localReceivefile(LFile, RFile);
+			return;
+		}
 		
 		FileOutputStream fos = null;
 		try {

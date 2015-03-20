@@ -45,8 +45,6 @@ public class ResultAMPL extends Result {
 
 			ctp.setTotalCost(ctp.getTotalCost() + cost);
 			
-			System.out.printf("D: %d, %d\n", t, value);
-			
 		} else if (Pattern.matches("S\\['t[0-9]+'\\] = [0-9]+", s)) {
 			String[] ss = s.split("'");
 			
@@ -70,8 +68,6 @@ public class ResultAMPL extends Result {
 			request.setExpectedHourCost(pi.getCostOnSpot().floatValue() * value);
 			
 			requests.getHourRequest().add(request);
-			
-			System.out.printf("S: %d, %d\n", t, value);
 		} else if (Pattern.matches("R\\['c[0-9]+','t[0-9]+'\\] = [0-9]+", s)) {
 //			String[] ss = s.split("'");
 //			
@@ -104,8 +100,6 @@ public class ResultAMPL extends Result {
 			contract.setInstanceType(pi.getResourceName());
 			
 			p.getContract().add(contract);
-			
-			System.out.printf("X: %d, %d\n", c, value);
 		}
 	}
 	

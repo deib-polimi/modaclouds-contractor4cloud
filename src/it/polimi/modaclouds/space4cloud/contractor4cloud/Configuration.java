@@ -3,6 +3,9 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Configuration {
@@ -54,7 +57,7 @@ public class Configuration {
 	public static String DEFAULTS_BASH_CMPL = "bashCMPL.run";
 	public static int CMPL_THREADS = 4;
 	
-	public static Solver MATH_SOLVER = Solver.AMPL;
+	public static Solver MATH_SOLVER = Solver.CMPL;
 	
 	public static String GENERATED_COSTS = "generated-costs.xml";
 	
@@ -192,6 +195,51 @@ public class Configuration {
 		
 		MATH_SOLVER = Solver.getByName(prop.getProperty("MATH_SOLVER", MATH_SOLVER.getName()));
 		
+	}
+	
+	/**
+	 * Checks if the configuration is valid returning a list of errors
+	 * @return
+	 */
+	public static List<String> checkValidity() {
+		ArrayList<String> errors = new ArrayList<String>();
+
+		//check Palladio Model Files
+		if(fileNotSpecifiedORNotExist(PALLADIO_REPOSITORY_MODEL))
+			errors.add("The palladio repository model has not been specified");
+		if(fileNotSpecifiedORNotExist(PALLADIO_SYSTEM_MODEL))
+			errors.add("The palladio system model has not been specified");
+		if(fileNotSpecifiedORNotExist(PALLADIO_RESOURCE_MODEL))
+			errors.add("The palladio resource environment model has not been specified");
+		if(fileNotSpecifiedORNotExist(PALLADIO_ALLOCATION_MODEL))
+			errors.add("The palladio allocation model has not been specified");
+		if(fileNotSpecifiedORNotExist(PALLADIO_USAGE_MODEL))
+			errors.add("The palladio usage model has not been specified");
+		//check extensions
+		if(fileNotSpecifiedORNotExist(USAGE_MODEL_EXTENSION))
+			errors.add("The usage model extension has not been specified");
+		if(fileNotSpecifiedORNotExist(RESOURCE_ENVIRONMENT_EXTENSION))
+			errors.add("The resource environment extension has not been specified");
+		if(fileNotSpecifiedORNotExist(CONSTRAINTS))
+			errors.add("The constraint file has not been specified");
+		//check functionality and the solver
+		if(fileNotSpecifiedORNotExist(DB_CONNECTION_FILE))
+			errors.add("The database connection file has not been specified");
+
+		if(SSH_HOST==null|| SSH_HOST.isEmpty())
+			errors.add("The host for SSH connection has to be provided to perform the initial solution generation");
+		else if (!Configuration.isRunningLocally()) {
+			if(SSH_USER_NAME==null|| SSH_USER_NAME.isEmpty())
+				errors.add("The user name for SSH connection has to be provided to perform the initial solution generation");
+			if(SSH_PASSWORD==null|| SSH_PASSWORD.isEmpty())
+				errors.add("The password for SSH connection has to be provided to perform the initial solution generation");
+		}
+
+		return errors;
+	}
+	
+	private static boolean fileNotSpecifiedORNotExist(String filePath){
+		return filePath == null || filePath.isEmpty() || !Paths.get(filePath).toFile().exists();
 	}
 	
 	public static boolean isRunningLocally() {

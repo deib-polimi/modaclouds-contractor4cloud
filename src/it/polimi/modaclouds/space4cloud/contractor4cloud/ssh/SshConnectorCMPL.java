@@ -6,7 +6,7 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.Contractor;
 public class SshConnectorCMPL extends SshConnector {
 
 	@Override
-	public void execute(int datas) {
+	public void execute(int datas) throws Exception {
 		exec(String.format("mkdir -p %s", Configuration.RUN_WORKING_DIRECTORY));
 		
 		for (int i = 1; i <= datas; ++i) {
@@ -28,7 +28,7 @@ public class SshConnectorCMPL extends SshConnector {
 			exec(String.format("rm -rf %s", Configuration.RUN_WORKING_DIRECTORY));
 	}
 	
-	public static void run(int datas) {
+	public static void run(int datas) throws Exception {
 		SshConnectorCMPL ssh = new SshConnectorCMPL();
 		ssh.execute(datas);
 	}

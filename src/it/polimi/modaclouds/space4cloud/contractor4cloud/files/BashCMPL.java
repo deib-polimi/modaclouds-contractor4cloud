@@ -18,7 +18,7 @@ public class BashCMPL extends Bash {
 			
 //			String baseFile = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(Configuration.RUN_FILE).toURI())));
 			
-			Scanner sc = new Scanner(this.getClass().getResourceAsStream("/" + Configuration.DEFAULTS_BASH));
+			Scanner sc = new Scanner(this.getClass().getResourceAsStream("/" + Configuration.DEFAULTS_BASH_CMPL));
 			
 			while (sc.hasNextLine())
 				baseFile += sc.nextLine() + "\n";

@@ -22,6 +22,11 @@ public class ResultCMPL extends Result {
 		super(path, daysConsidered);
 	}
 	
+	@Override
+	public void match(String s) {
+		System.out.println(s);
+	}
+	
 //	@Override
 //	public void match(String s) {
 //		if (Pattern.matches("D\\['t[0-9]+'\\] = [0-9]+", s)) {
