@@ -17,60 +17,65 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.ssh;
 
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.Contractor;
 
 //this class is used to create connection to AMPL server (wrapper)
-public class SshConnector {
+public abstract class SshConnector {
+	
+	// this object runs bash-script on AMPL server
+	private ExecSSH newExecSSH;
+	
+	// this object uploads files on AMPL server
+	private ScpTo newScpTo;
+	
+	// this block downloads logs and results of AMPL
+	private ScpFrom newScpFrom;
+	
+	public SshConnector() {
+		newExecSSH = new ExecSSH();
+		newScpTo = new ScpTo();
+		newScpFrom = new ScpFrom();
+	}
+	
+	private void sendFile(String localFile, String remoteFile) {
+		newScpTo.sendfile(localFile, remoteFile);
+	}
+	
+	public void sendFileToWorkingDir(String file) {
+		sendFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
+		fixFile(Configuration.RUN_WORKING_DIRECTORY, file);
+	}
+	
+	public void exec(String command) {
+		newExecSSH.mainExec(command);
+	}
+	
+	private void receiveFile(String localFile, String remoteFile) {
+		newScpFrom.receivefile(localFile, remoteFile);
+	}
+	
+	public void receiveFileFromWorkingDir(String file) {
+		receiveFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
+	}
+	
+	private void fixFile(String folder, String file) {
+		exec(String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
+						folder,
+						file));
+	}
 	
 	// main execution function
 	public static void run(int datas) {
-		
-		// this object runs bash-script on AMPL server
-		ExecSSH newExecSSH = new ExecSSH();
-		
-		newExecSSH.mainExec(String.format("mkdir %s", Configuration.RUN_WORKING_DIRECTORY));
-		
-		// this object uploads files on AMPL server
-		ScpTo newScpTo = new ScpTo();
-		for (int i = 1; i <= datas; ++i) {
-			newScpTo.sendfile(Configuration.RUN_DATA + "-" + i, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.RUN_DATA + "-" + i);
-			newScpTo.sendfile(Configuration.RUN_FILE + "-" + i, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.RUN_FILE + "-" + i);
-			
-			newScpTo.sendfile(Configuration.DEFAULTS_BASH + "-" + i, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.DEFAULTS_BASH + "-" + i);
-			
-			newExecSSH.mainExec(
-					String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
-							Configuration.RUN_WORKING_DIRECTORY,
-							Configuration.RUN_DATA + "-" + i));
-			newExecSSH.mainExec(
-					String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
-							Configuration.RUN_WORKING_DIRECTORY,
-							Configuration.RUN_FILE + "-" + i));
-			newExecSSH.mainExec(
-					String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
-							Configuration.RUN_WORKING_DIRECTORY,
-							Configuration.DEFAULTS_BASH + "-" + i));
-		}
-		newScpTo.sendfile(Configuration.RUN_MODEL, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.RUN_MODEL);
-		
-		newExecSSH.mainExec(
-				String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
-						Configuration.RUN_WORKING_DIRECTORY,
-						Configuration.RUN_MODEL));
-		
-		for (int i = 1; i <= datas; ++i)
-			newExecSSH.mainExec("bash " + Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.DEFAULTS_BASH + "-" + i);
-
-		// this block downloads logs and results of AMPL
-		ScpFrom newScpFrom = new ScpFrom();
-		
-		for (int i = 1; i <= datas; ++i) {
-			newScpFrom.receivefile(Configuration.RUN_LOG + "-" + i, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.RUN_LOG + "-" + i);
-			newScpFrom.receivefile(Configuration.RUN_RES + "-" + i, Configuration.RUN_WORKING_DIRECTORY + "/" + Configuration.RUN_RES + "-" + i);
+		switch (Configuration.MATH_SOLVER) {
+		case AMPL:
+			SshConnectorAMPL.run(datas);
+			break;
+		case CMPL:
+			SshConnectorCMPL.run(datas);
+			break;
 		}
 		
-		if (Contractor.removeTempFiles)
-			newExecSSH.mainExec(String.format("rm -rf %s", Configuration.RUN_WORKING_DIRECTORY));
 	}
+	
+	public abstract void execute(int datas);
 
 }

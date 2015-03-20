@@ -69,7 +69,7 @@ public class Contractor {
 		
 		int datas = Data.print(solution, daysConsidered, percentageOfS, m);
 		Run.print(datas);
-		Model.print();
+		Model.print(datas);
 		Bash.print(datas);
 		
 		SshConnector.run(datas);

@@ -1,0 +1,47 @@
+%%arg -solver %s
+%%arg -solutionAscii %s
+%%display var AmountVM* PartialArrRate*
+%%display ignoreCons
+%%display nonZeros
+%%opt cplex threads %4$d
+%%opt cbc threads %4$d
+%%opt glpk threads %4$d
+
+%%data %s : CONTAINER set, PROVIDER set, CLASS_REQUEST set, TYPE_VM set, TIME_INT set, COMPONENT set, ProbabilityToBeInComponent[CLASS_REQUEST, COMPONENT], ArrRate[TIME_INT], MaximumSR[CLASS_REQUEST, COMPONENT], Alpha[CLASS_REQUEST], Speed[TYPE_VM, PROVIDER, CONTAINER], Cost[TYPE_VM, PROVIDER, CONTAINER], MaxResponseTime[CLASS_REQUEST, COMPONENT], MinProv, MaxVMPerContainer, MinArrRate[PROVIDER], PartitionComponents[COMPONENT, CONTAINER], Availability[PROVIDER], MaxUnavailability
+
+variables:
+  X[PROVIDER]: binary;
+  W[TYPE_VM, PROVIDER, CONTAINER]: binary;
+  PartialArrRate[PROVIDER, TIME_INT]: real[0..];
+  AmountVM[TYPE_VM, PROVIDER, CONTAINER, TIME_INT]: integer[0..];
+
+objectives:
+  Total_Cost: sum{t in TIME_INT, p in PROVIDER, i in CONTAINER, v in TYPE_VM: Cost[v, p, i]*AmountVM[v, p, i, t]}->min;
+
+constraints:
+  #TotalNumberOfProviders
+  sum{p in PROVIDER: X[p]} >= MinProv;
+
+  #ArrRatePerProvider1
+  {p in PROVIDER, t in TIME_INT: X[p]*MinArrRate[p]*ArrRate[t] <= PartialArrRate[p, t];}
+
+  #ArrRatePerProvider2
+  {p in PROVIDER, t in TIME_INT: PartialArrRate[p, t] <= X[p]*ArrRate[t];}
+
+  #Efficiency
+  {t in TIME_INT: sum{p in PROVIDER:PartialArrRate[p, t]} = ArrRate[t];}
+
+  #Select_Types
+  {p in PROVIDER, i in CONTAINER: sum{v in TYPE_VM: W[v, p, i]} = X[p];}
+
+  #VMAmount
+  {v in TYPE_VM, p in PROVIDER, i in CONTAINER, t in TIME_INT: W[v, p, i] <= AmountVM[v, p, i, t];}
+
+  #VMAmount2
+  {v in TYPE_VM, p in PROVIDER, i in CONTAINER, t in TIME_INT: AmountVM[v, p, i, t] <= MaxVMPerContainer*W[v, p, i];}
+
+  #Response_Time
+  {k in CLASS_REQUEST, p in PROVIDER, i in CONTAINER, t in TIME_INT, c in COMPONENT, ProbabilityToBeInComponent[k,c]*PartitionComponents[c,i]>0: sum{d in CLASS_REQUEST, g in COMPONENT, ProbabilityToBeInComponent[d,g]*PartitionComponents[g, i]>0: (Alpha[d]*ProbabilityToBeInComponent[d, g]/MaximumSR[d, g])*PartialArrRate[p, t]*MaximumSR[k, c]*MaxResponseTime[k, c]}+ sum{v in TYPE_VM: AmountVM[v, p, i, t]} <= sum{v in TYPE_VM:AmountVM[v, p, i, t]*Speed[v, p, i]*MaximumSR[k, c]*MaxResponseTime[k, c]};}
+
+  #AvailabilityConstraint
+  sum{p in PROVIDER: lg(1 - Availability[p]) * X[p]} <= lg(MaxUnavailability);

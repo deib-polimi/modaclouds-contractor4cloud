@@ -1,0 +1,2 @@
+cd %s
+%s/cmpl %s &> %s

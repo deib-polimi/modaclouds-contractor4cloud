@@ -2,24 +2,19 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
-public class Model {
+public abstract class Model {
 	
-	public boolean print(String file) {
-		
-		try {
-			Files.copy(this.getClass().getResourceAsStream("/" + Configuration.RUN_MODEL), Paths.get(file), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-		} catch (Exception e) {
-			return false;
+	public abstract boolean print(String file, int i);
+	
+	public static void print(int datas) {
+		switch (Configuration.MATH_SOLVER) {
+		case AMPL:
+			ModelAMPL.print(datas);
+			break;
+		case CMPL:
+			ModelCMPL.print(datas);
+			break;
 		}
-		
-		return true;
 	}
-
-	public static void print() {
-		Model m = new Model();
-		m.print(Configuration.RUN_MODEL);
-	}
+	
 }

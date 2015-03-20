@@ -1,6 +1,6 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.solution;
 
-import it.polimi.modaclouds.qos_models.schema.IaasService;
+import it.polimi.modaclouds.qos_models.schema.CloudService;
 import it.polimi.modaclouds.qos_models.schema.Location;
 import it.polimi.modaclouds.qos_models.schema.Replica;
 import it.polimi.modaclouds.qos_models.schema.ReplicaElement;
@@ -64,7 +64,7 @@ public class SolutionMulti implements Cloneable, Serializable {
 				ResourceModelExtension rme = XMLHelper.deserialize(Paths.get(solution.getAbsolutePath()).toUri().toURL(),ResourceModelExtension.class);
 				
 				for (ResourceContainer rc : rme.getResourceContainer()) {
-					IaasService iaas = rc.getCloudResource();
+					CloudService iaas = rc.getCloudElement();
 					if (iaas.getResourceSizeID() != null && iaas.getReplicas() != null)
 						return false;
 				}
@@ -88,7 +88,7 @@ public class SolutionMulti implements Cloneable, Serializable {
 			ResourceModelExtension rme = XMLHelper.deserialize(Paths.get(initialSolution.getAbsolutePath()).toUri().toURL(),ResourceModelExtension.class);
 
 			for (ResourceContainer rc : rme.getResourceContainer()) {
-				IaasService iaas = rc.getCloudResource();
+				CloudService iaas = rc.getCloudElement();
 				
 				String provider = rc.getProvider();
 				String tierId = rc.getId();

@@ -29,13 +29,6 @@ import com.jcraft.jsch.Session;
 
 //this class allows to execute commands on AMPL server
 public class ExecSSH {
-	// main execution function
-	// returns in List<Strings> all answers of the server
-	public List<String> mainExec() {
-		return mainExec("bash " + Configuration.RUN_WORKING_DIRECTORY + "/"
-					+ Configuration.DEFAULTS_BASH);
-	}
-	
 	
 	public List<String> mainExec(String command) {
 		List<String> res = new ArrayList<String>();
