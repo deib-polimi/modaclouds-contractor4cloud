@@ -57,7 +57,7 @@ public class Configuration {
 	public static String DEFAULTS_BASH_CMPL = "bashCMPL.run";
 	public static int CMPL_THREADS = 4;
 	
-	public static Solver MATH_SOLVER = Solver.CMPL;
+	public static Solver MATH_SOLVER = Solver.AMPL;
 	
 	public static String GENERATED_COSTS = "generated-costs.xml";
 	
