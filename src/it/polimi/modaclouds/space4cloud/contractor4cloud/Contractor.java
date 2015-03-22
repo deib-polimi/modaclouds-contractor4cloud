@@ -24,20 +24,20 @@ public class Contractor {
 	private double percentageOfS;
 	private double m;
 	
-	public Contractor(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) {
+	public Contractor(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
 		try {
 			Configuration.loadConfiguration(configurationFile);
-			
-			if (SolutionMulti.isEmpty(new File(solutionFile))) {
-				throw new Exception("The solution file doesn't exist or is empty!");
-			} else {
-				solution = new SolutionMulti(new File(solutionFile));
-				
-				if (solution.size() == 0)
-					throw new Exception("Error with the solution!");
-			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new Contractor4CloudException("Error while loading the configuration file!", e);
+		}
+			
+		if (SolutionMulti.isEmpty(new File(solutionFile))) {
+			throw new Contractor4CloudException("The solution file doesn't exist or is empty!");
+		} else {
+			solution = new SolutionMulti(new File(solutionFile));
+			
+			if (solution.size() == 0)
+				throw new Contractor4CloudException("Error with the solution!");
 		}
 		
 		this.daysConsidered = daysConsidered;
@@ -116,7 +116,7 @@ public class Contractor {
 	
 	public static boolean removeTempFiles = true;
 	
-	public void cleanFiles() {
+	public void cleanFiles() throws Contractor4CloudException {
 		try {
 			Files.deleteIfExists(Paths.get(Configuration.RUN_FILE));
 			Files.deleteIfExists(Paths.get(Configuration.RUN_DATA));
@@ -125,7 +125,7 @@ public class Contractor {
 			Files.deleteIfExists(Paths.get(Configuration.RUN_LOG));
 			Files.deleteIfExists(Paths.get(Configuration.RUN_RES));
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new Contractor4CloudException("Error while removing the temporary files.", e);
 		}
 	}
 
