@@ -106,6 +106,7 @@ public class SolutionMulti implements Cloneable, Serializable {
 		return true;
 	}
 
+	@Deprecated
 	private static boolean isEmptyFileSolution(File solution) {
 		if (solution != null && solution.exists())
 			try {
