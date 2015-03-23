@@ -10,13 +10,22 @@ import it.polimi.modaclouds.qos_models.util.XMLHelper;
 
 import java.io.File;
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * This class should handle a multi-provider solution, or also, in the
@@ -59,14 +68,56 @@ public class SolutionMulti implements Cloneable, Serializable {
 	}
 
 	public static boolean isEmpty(File solution) {
+		if (isResourceModelExtension(solution))
+			return isEmptyResourceModelExtension(solution);
+		else
+			return isEmptyFileSolution(solution);
+	}
+	
+	private static boolean isResourceModelExtension(File f) {
+		try {
+			XMLHelper.deserialize(f.toURI().toURL(), ResourceModelExtension.class);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	private static boolean isEmptyResourceModelExtension(File solution) {
+		try {
+			ResourceModelExtension rme = XMLHelper.deserialize(solution
+					.toURI().toURL(), ResourceModelExtension.class);
+			
+			for (ResourceContainer rc : rme.getResourceContainer()) {
+				it.polimi.modaclouds.qos_models.schema.CloudService cs = rc.getCloudElement();
+				if (cs != null) {
+					Replica r = cs.getReplicas();
+					if (r != null) {
+						List<ReplicaElement> re = r.getReplicaElement();
+						if (re.size() > 0)
+							return false;
+					}
+				}
+			}
+			
+		} catch (MalformedURLException | JAXBException | SAXException e) {
+			logger.error("Error in checking if the solution is empty",e);
+		}
+		return true;
+	}
+
+	private static boolean isEmptyFileSolution(File solution) {
 		if (solution != null && solution.exists())
 			try {
-				ResourceModelExtension rme = XMLHelper.deserialize(Paths.get(solution.getAbsolutePath()).toUri().toURL(),ResourceModelExtension.class);
-				
-				for (ResourceContainer rc : rme.getResourceContainer()) {
-					CloudService iaas = rc.getCloudElement();
-					if (iaas.getResourceSizeID() != null && iaas.getReplicas() != null)
-						return false;
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+						.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(solution);
+				doc.getDocumentElement().normalize();
+
+				{
+					NodeList nl = doc.getElementsByTagName("HourAllocation");
+					return (nl.getLength() == 0);
 				}
 			} catch (Exception e) {
 				logger.error("Error in checking if the solution is empty",e);
