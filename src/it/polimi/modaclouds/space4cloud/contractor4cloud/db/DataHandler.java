@@ -11,7 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DataHandler {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataHandler.class);
 	
 	/**
 	 * Instantiates a new data handler. it also charges data from the database
@@ -25,7 +30,7 @@ public class DataHandler {
 			FileInputStream fis = new FileInputStream(Configuration.DB_CONNECTION_FILE);
 			DatabaseConnector.initConnection(fis);
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new SQLException("Error while initializing the database.", e);
 		}
 	}
 	
@@ -51,7 +56,7 @@ public class DataHandler {
 				costs.put(key, cost);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting infos from the database.", e);
 		}
 		
 		return cost;
@@ -78,7 +83,7 @@ public class DataHandler {
 				costs.put(key, cost);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting infos from the database.", e);
 		}
 		
 		return cost;
@@ -117,7 +122,7 @@ public class DataHandler {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting infos from the database.", e);
 		}
 		
 		return res;
@@ -159,7 +164,7 @@ public class DataHandler {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting infos from the database.", e);
 		}
 		
 		return res;

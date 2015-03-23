@@ -2,13 +2,23 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud;
 
 import java.io.File;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Main {
 
-	public static void mainConstellation(String[] args) {
-		String basePath       = "/Users/ft/Development/workspace-s4c-runtime/Constellation/";
-		String configuration  = basePath + "OptimizationMacLocal.properties";
-		String solution       = basePath + "ContainerExtensions/Computed/Solution-Conference-Amazon.xml";
-
+	private static final Logger logger = LoggerFactory.getLogger(Main.class);
+	
+	public static void doMain(String configuration, String solution) {
+		if (configuration == null || !new File(configuration).exists()) {
+			logger.error("The configuration file doesn't exist! Exiting...");
+			return;
+		}
+		
+		if (solution == null || !new File(solution).exists()) {
+			logger.error("The solution file doesn't exist! Exiting...");
+			return;
+		}
 		
 		Contractor.removeTempFiles = false;
 		
@@ -19,12 +29,20 @@ public class Main {
 		try {
 			File f = Contractor.perform(configuration, solution, daysConsidered, percentageOfS, m);
 			if (f != null && f.exists())
-				System.out.println("Solution: " + f.getAbsolutePath());
+				logger.debug("Solution: " + f.getAbsolutePath());
 			else
-				System.out.println("No solution!");
+				logger.error("No solution!");
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while getting the solution!", e);
 		}
+	}
+	
+	public static void mainConstellation(String[] args) {
+		String basePath       = "/Users/ft/Development/workspace-s4c-runtime/Constellation/";
+		String configuration  = basePath + "OptimizationMacLocal.properties";
+		String solution       = basePath + "ContainerExtensions/Computed/Solution-Conference-Amazon.xml";
+
+		doMain(configuration, solution);
 	}
 	
 	public static void main(String[] args) {

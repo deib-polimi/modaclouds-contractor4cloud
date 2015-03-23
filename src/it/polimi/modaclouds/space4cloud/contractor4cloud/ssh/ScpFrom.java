@@ -187,7 +187,7 @@ public class ScpFrom {
 		return b;
 	}
 	
-	public void localReceivefile(String LFile, String RFile) throws FileNotFoundException {
+	public void localReceivefile(String LFile, String RFile) throws Exception {
 		if (!new File(RFile).exists())
 			throw new FileNotFoundException("File " + RFile + " not found!");
 		

@@ -45,7 +45,7 @@ public abstract class SshConnector {
 		fixFile(Configuration.RUN_WORKING_DIRECTORY, file);
 	}
 	
-	public void exec(String command) {
+	public void exec(String command) throws Exception {
 		newExecSSH.mainExec(command);
 	}
 	
@@ -57,7 +57,7 @@ public abstract class SshConnector {
 		receiveFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
 	}
 	
-	private void fixFile(String folder, String file) {
+	private void fixFile(String folder, String file) throws Exception {
 		exec(String.format("cd %1$s && tr -d '\r' < %2$s > %2$s-bak && mv %2$s-bak %2$s",
 						folder,
 						file));

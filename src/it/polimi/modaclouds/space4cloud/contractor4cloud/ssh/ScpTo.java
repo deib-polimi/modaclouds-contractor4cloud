@@ -207,7 +207,7 @@ public class ScpTo {
 //		}
 //	}
 	
-	public void localSendfile(String LFile, String RFile) throws FileNotFoundException {
+	public void localSendfile(String LFile, String RFile) throws Exception {
 		if (!new File(LFile).exists())
 			throw new FileNotFoundException("File " + LFile + " not found!");
 		

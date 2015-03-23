@@ -66,11 +66,11 @@ public class DatabaseConnector {
 			userName=properties.getProperty("USERNAME");
 			password=properties.getProperty("PASSWORD");
 		}
-		logger.debug("Data base connection settings:");
-		logger.debug("\turl:"+url);
-		logger.debug("\tname:"+dbName);
-		logger.debug("\tuser:"+userName);
-		logger.debug("\tpass:"+password);
+		logger.trace("Data base connection settings:");
+		logger.trace("\turl:"+url);
+		logger.trace("\tname:"+dbName);
+		logger.trace("\tuser:"+userName);
+		logger.trace("\tpass:"+password);
 
 
 		connect();
@@ -81,14 +81,20 @@ public class DatabaseConnector {
 			Class.forName(driver).newInstance();
 		} catch (InstantiationException | IllegalAccessException
 				| ClassNotFoundException e) {
-			logger.error("Unable to find the JDBC driver",e);
+			throw new SQLException("Unable to find the JDBC driver.", e);
 		}
-		conn = DriverManager
-				.getConnection(url + dbName, userName, password);
+		try {
+			conn = DriverManager
+					.getConnection(url + dbName, userName, password);
+		} catch (Exception e) {
+			throw new SQLException("Error in connecting to the database.", e);
+		}
 		if(conn != null)
-			logger.info("Connection with the database established");
-		else
-			logger.error("Error in connecting to the database");
+			logger.trace("Connection with the database established.");
+		else {
+//			logger.error("Error in connecting to the database");
+			throw new SQLException("Error in connecting to the database.");
+		}
 	}
 
 	/**
@@ -97,16 +103,10 @@ public class DatabaseConnector {
 	 * @return the Connection instance.
 	 * @throws SQLException 
 	 */
-	public static Connection getConnection() {
-		try {
-			if (conn == null || conn.isClosed() || !conn.isValid(10000))
-				connect();
-			return conn;
-		} catch (Exception e) {
-			logger.error("Error in connecting to the database");
-		}
-		
-		return null;
+	public static Connection getConnection() throws SQLException {
+		if (conn == null || conn.isClosed() || !conn.isValid(10000))
+			connect();
+		return conn;
 	}
 }
 

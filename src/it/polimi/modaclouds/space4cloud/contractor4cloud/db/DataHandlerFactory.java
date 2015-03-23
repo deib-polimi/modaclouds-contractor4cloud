@@ -17,21 +17,15 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud.db;
 
 import java.sql.SQLException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class DataHandlerFactory {
 
-	private static DataHandler instance = null;;
-
-	private static final Logger logger = LoggerFactory.getLogger(DataHandlerFactory.class);
+	private static DataHandler instance = null;
 
 	public static DataHandler getHandler() throws DatabaseConnectionFailureExteption {
 		if (instance == null) {
 			try {
 				instance = new DataHandler();
-			} catch (SQLException e) {
-				logger.error("Error building the data handler");				
+			} catch (SQLException e) {				
 				throw new DatabaseConnectionFailureExteption("Error building the data handler", e);
 			}
 		}
