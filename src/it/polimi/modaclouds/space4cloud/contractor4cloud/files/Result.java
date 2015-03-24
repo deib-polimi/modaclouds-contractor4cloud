@@ -121,4 +121,18 @@ public abstract class Result {
 	}
 	
 	public abstract void match(String s);
+	
+	public static File printEmpty(Path p) {
+		File f = null;
+		switch (Configuration.MATH_SOLVER) {
+		case AMPL:
+			f = new ResultAMPL(p, 0).export();
+			break;
+		case CMPL:
+			f = new ResultCMPL(p, 0).export();
+			break;
+		}
+		return f;
+	}
+	
 }

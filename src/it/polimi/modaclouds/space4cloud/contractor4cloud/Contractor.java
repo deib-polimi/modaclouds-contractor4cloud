@@ -17,7 +17,12 @@ import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Contractor {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Contractor.class);
 	
 	private SolutionMulti solution;
 	private int daysConsidered;
@@ -63,6 +68,15 @@ public class Contractor {
 	private File solutionFile = null;
 	
 	public File getSolutions(Path path) throws Contractor4CloudException {
+		if (path == null)
+			path = Paths.get(Configuration.PROJECT_BASE_FOLDER, Configuration.WORKING_DIRECTORY);
+		
+		if (Configuration.usesPaaS()) {
+			logger.error("PaaS not supported at the moment.");
+			solutionFile = Result.printEmpty(path);
+			return solutionFile;
+		}
+		
 		List<String> errors = Configuration.checkValidity(); 
 		if (errors.size() == 1)
 			throw new Contractor4CloudException("There is 1 problem with the configuration:\n- " + errors.get(0)); 
@@ -94,9 +108,6 @@ public class Contractor {
 		} catch (Exception e) {
 			throw new Contractor4CloudException("Error when sending or receiving file or when executing the script.", e);
 		}
-		
-		if (path == null)
-			path = Paths.get(Configuration.PROJECT_BASE_FOLDER, Configuration.WORKING_DIRECTORY);
 		
 		try {
 			solutionFile = Result.parse(solution, path, daysConsidered);

@@ -1,5 +1,10 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud;
 
+import it.polimi.modaclouds.qos_models.schema.CloudService;
+import it.polimi.modaclouds.qos_models.schema.ResourceContainer;
+import it.polimi.modaclouds.qos_models.schema.ResourceModelExtension;
+import it.polimi.modaclouds.qos_models.util.XMLHelper;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -244,5 +249,27 @@ public class Configuration {
 	
 	public static boolean isRunningLocally() {
 		return (SSH_HOST.equals("localhost") || SSH_HOST.equals("127.0.0.1"));
+	}
+	
+	public static boolean usesPaaS() {
+		try {
+			ResourceModelExtension rme = XMLHelper.deserialize(Paths.get(RESOURCE_ENVIRONMENT_EXTENSION).toUri().toURL(),ResourceModelExtension.class);
+			
+			for (ResourceContainer rc : rme.getResourceContainer()) {
+				CloudService resource = rc.getCloudElement();
+				String serviceType = resource.getServiceType();
+				String serviceCategory = resource.getServiceCategory();
+				
+				if (serviceCategory != null && serviceCategory.equals("PaaS"))
+					return true;
+				if (serviceType != null && !serviceType.equals("Compute"))
+					return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		return false;
 	}
 }
