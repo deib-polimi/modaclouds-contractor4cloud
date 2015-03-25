@@ -103,7 +103,7 @@ public class ResultAMPL extends Result {
 		}
 	}
 	
-	public static File parse(SolutionMulti solution, Path path, int daysConsidered) {
+	public static File parse(SolutionMulti solution, Path path, int daysConsidered) throws Exception {
 		List<ProblemInstance> pis = ProblemInstance.getProblemInstances(solution);
 		ResultAMPL result = new ResultAMPL(path, daysConsidered);
 		for (int i = 0; i < pis.size(); ++i) {

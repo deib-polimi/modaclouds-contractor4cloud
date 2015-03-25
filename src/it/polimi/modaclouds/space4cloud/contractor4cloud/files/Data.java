@@ -39,9 +39,9 @@ public abstract class Data {
 		return myFormatter;
 	}
 	
-	public abstract boolean print(String file, int i);
+	public abstract boolean print(String file, int i) throws Exception;
 
-	public static int print(SolutionMulti solution, int daysConsidered, double percentageOfS, double m) {
+	public static int print(SolutionMulti solution, int daysConsidered, double percentageOfS, double m) throws Exception {
 		int i = 0;
 		switch (Configuration.MATH_SOLVER) {
 		case AMPL:

@@ -2,7 +2,6 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud.solution;
 
 import it.polimi.modaclouds.space4cloud.contractor4cloud.db.DataHandler;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.db.DataHandlerFactory;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.db.DatabaseConnectionFailureExteption;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -18,18 +17,14 @@ public class ProblemInstance {
 	
 	private DataHandler dataHandler;
 	
-	public ProblemInstance(String provider, String region, String serviceName, String resourceName, int[] replicas) {
+	public ProblemInstance(String provider, String region, String serviceName, String resourceName, int[] replicas) throws Exception {
 		this.provider = provider;
 		this.region = region;
 		this.serviceName = serviceName;
 		this.resourceName = resourceName;
 		this.replicas = replicas;
 		
-		try {
-			this.dataHandler = DataHandlerFactory.getHandler();
-		} catch (DatabaseConnectionFailureExteption e) {
-			e.printStackTrace();
-		}
+		this.dataHandler = DataHandlerFactory.getHandler();
 	}
 	
 	public String getProvider() {
@@ -85,7 +80,7 @@ public class ProblemInstance {
 		return dataHandler.getNumberOfContracts();
 	}
 
-	public static List<ProblemInstance> getProblemInstances(SolutionMulti solutionMulti) {
+	public static List<ProblemInstance> getProblemInstances(SolutionMulti solutionMulti) throws Exception {
 		Map<String, ProblemInstance> map = new LinkedHashMap<String, ProblemInstance>();
 		
 		for (Solution s : solutionMulti.getAll()) {

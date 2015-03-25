@@ -84,7 +84,7 @@ public class DataCMPL extends Data {
 		return true;
 	}
 	
-	public static int print(SolutionMulti solution, int daysConsidered, double percentageOfS, double m) {
+	public static int print(SolutionMulti solution, int daysConsidered, double percentageOfS, double m) throws Exception {
 		int i = 0;
 		for (ProblemInstance pi : ProblemInstance.getProblemInstances(solution)) {
 			DataCMPL data = new DataCMPL(pi, daysConsidered, percentageOfS, m);

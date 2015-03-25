@@ -1,20 +1,12 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
-import it.polimi.modaclouds.qos_models.schema.ContractType;
-import it.polimi.modaclouds.qos_models.schema.CostType;
-import it.polimi.modaclouds.qos_models.schema.HourPriceType;
-import it.polimi.modaclouds.qos_models.schema.Costs.Providers;
-import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
-import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
 import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class ResultCMPL extends Result {
 
@@ -114,7 +106,7 @@ public class ResultCMPL extends Result {
 //		}
 //	}
 	
-	public static File parse(SolutionMulti solution, Path path, int daysConsidered) {
+	public static File parse(SolutionMulti solution, Path path, int daysConsidered) throws Exception {
 		List<ProblemInstance> pis = ProblemInstance.getProblemInstances(solution);
 		ResultCMPL result = new ResultCMPL(path, daysConsidered);
 		for (int i = 0; i < pis.size(); ++i) {

@@ -76,7 +76,7 @@ public abstract class Result {
 		return null;
 	}
 	
-	public static File parse(SolutionMulti solution, Path path, int daysConsidered) {
+	public static File parse(SolutionMulti solution, Path path, int daysConsidered) throws Exception {
 		File f = null;
 		switch (Configuration.MATH_SOLVER) {
 		case AMPL:
