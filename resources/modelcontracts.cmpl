@@ -9,6 +9,10 @@
 
 %%data %s : CONTRACT set, TIME_INT set, PercentageOfS, CostD, CostS[TIME_INT], CostR[CONTRACT], InitialCostR[CONTRACT], Instances[TIME_INT], M, DaysConsidered
 
+parameters:
+  InvDays := 1/DaysConsidered;
+  Eta := PercentageOfS / (1 - PercentageOfS);
+
 variables:
   S[TIME_INT]: integer[0..];
   D[TIME_INT]: integer[0..];
@@ -17,14 +21,14 @@ variables:
   Y[CONTRACT]: binary;
 
 objectives:
-  Total_Cost: sum{c in CONTRACT: InitialCostR[c] * X[c]}/DaysConsidered + sum{t in TIME_INT: CostD * D[t] + CostS[t] * S[t] + sum{c in CONTRACT: CostR[c] * R[c, t]} } ->min;
+  Total_Cost: sum{c in CONTRACT: InitialCostR[c] * X[c] * InvDays} + sum{t in TIME_INT: CostD * D[t] + CostS[t] * S[t] + sum{c in CONTRACT: CostR[c] * R[c, t]} } ->min;
 
 constraints:
   #AllInstancesAllocated
   {t in TIME_INT: D[t] + S[t] + sum{c in CONTRACT: R[c, t]} = Instances[t];}
 
   #PercentageOfOnSpotRespected
-  {t in TIME_INT: S[t] <= PercentageOfS / (1 - PercentageOfS) * (D[t] + sum{c in CONTRACT: R[c, t]} ) ;}
+  {t in TIME_INT: S[t] <= Eta * D[t] + sum{c in CONTRACT: R[c, t] * Eta}  ;}
 
   #C13
   {c in CONTRACT: X[c] <= M * Y[c];}
