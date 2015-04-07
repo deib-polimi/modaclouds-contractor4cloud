@@ -107,7 +107,7 @@ public class Configuration {
 		prop.put("RUN_SOLVER", RUN_SOLVER);
 		prop.put("RUN_AMPL_FOLDER", RUN_AMPL_FOLDER);
 		
-		prop.put("RUN_SOLVER_CMPL", RUN_SOLVER);
+		prop.put("RUN_SOLVER_CMPL", RUN_SOLVER_CMPL);
 		prop.put("RUN_CMPL_FOLDER", RUN_CMPL_FOLDER);
 		prop.put("CMPL_THREADS", String.valueOf(CMPL_THREADS));
 		
@@ -142,7 +142,7 @@ public class Configuration {
 		prop.put("RUN_SOLVER", RUN_SOLVER);
 		prop.put("RUN_AMPL_FOLDER", RUN_AMPL_FOLDER);
 		
-		prop.put("RUN_SOLVER_CMPL", RUN_SOLVER);
+		prop.put("RUN_SOLVER_CMPL", RUN_SOLVER_CMPL);
 		prop.put("RUN_CMPL_FOLDER", RUN_CMPL_FOLDER);
 		prop.put("CMPL_THREADS", String.valueOf(CMPL_THREADS));
 		
