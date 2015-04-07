@@ -37,7 +37,7 @@ To use this tool you need to add it as a maven dependency:
 
 * Group Id: it.polimi.modaclouds.space4cloud
 * Artifact Id: contractor4cloud
-* Version: 0.1.0
+* Version: 0.1.1
 * Type: jar
 * Scope: compile.
 
