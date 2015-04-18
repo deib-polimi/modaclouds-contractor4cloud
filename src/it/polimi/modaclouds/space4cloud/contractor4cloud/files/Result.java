@@ -1,9 +1,11 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
+import it.polimi.modaclouds.qos_models.schema.ContractType;
 import it.polimi.modaclouds.qos_models.schema.CostType;
 import it.polimi.modaclouds.qos_models.schema.Costs;
 import it.polimi.modaclouds.qos_models.schema.Costs.Providers;
 import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
+import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
 import it.polimi.modaclouds.qos_models.schema.HourPriceType;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
@@ -14,6 +16,7 @@ import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -64,6 +67,8 @@ public abstract class Result {
 			// Write to System.out
 //			m.marshal(rme, System.out);
 
+			updateTotalCosts();
+			
 			// Write to File
 			File f = Paths.get(path.toString(), Configuration.GENERATED_COSTS).toFile();
 			m.marshal(costs, f);
@@ -118,6 +123,50 @@ public abstract class Result {
 		}
 		
 		return p;
+	}
+	
+	private void updateTotalCosts() {
+		CostType total = new CostType();
+		double totalCost = 0;
+		for (int h = 0; h < 24; ++h) {
+			HourPriceType hour = new HourPriceType();
+			hour.setHour(h);
+			hour.setCost(0.0f);
+			total.getHourPrice().add(hour);
+		}
+		List<Providers> ps = costs.getProviders();
+		for (Providers p : ps) {
+			CostType costProvider = p.getCost();
+			for (HourPriceType hour : total.getHourPrice())
+				hour.setCost(hour.getCost() + costProvider.getHourPrice().get(hour.getHour()).getCost());
+			
+			List<ContractType> contracts = p.getContract();
+			for (ContractType c : contracts) {
+				double initialCost = c.getInitialCost();
+				if (c.getContractType().indexOf("3year") > -1)
+					initialCost *= 3;
+				
+				initialCost /= daysConsidered * 24;
+				
+				for (HourPriceType hour : total.getHourPrice())
+					hour.setCost(hour.getCost() + initialCost + c.getHourCost()*c.getReplicas());
+			}
+			
+			List<SpotRequests> spots = p.getSpotRequests();
+			for (SpotRequests s : spots) {
+				List<HourRequest> reqs = s.getHourRequest();
+				for (HourRequest r : reqs) {
+					HourPriceType hour = total.getHourPrice().get(r.getHour());
+					hour.setCost(hour.getCost() + r.getExpectedHourCost()*r.getReplicas());
+				}
+			}
+		}
+		
+		for (HourPriceType hour : total.getHourPrice())
+			totalCost += hour.getCost();
+		
+		total.setTotalCost((float)totalCost);
+		costs.setCost(total);
 	}
 	
 	public abstract void match(String s);
