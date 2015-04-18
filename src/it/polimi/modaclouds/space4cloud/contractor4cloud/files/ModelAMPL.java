@@ -11,7 +11,7 @@ public class ModelAMPL extends Model {
 	public boolean print(String file, int i) {
 		
 		try {
-			Files.copy(this.getClass().getResourceAsStream("/" + Configuration.RUN_MODEL), Paths.get(file), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(Configuration.getStream(Configuration.RUN_MODEL), Paths.get(file), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 		} catch (Exception e) {
 			return false;
 		}

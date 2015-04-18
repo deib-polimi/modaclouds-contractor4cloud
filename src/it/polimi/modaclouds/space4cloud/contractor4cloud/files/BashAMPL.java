@@ -18,7 +18,7 @@ public class BashAMPL extends Bash {
 			
 //			String baseFile = new String(Files.readAllBytes(Paths.get(this.getClass().getResource(Configuration.RUN_FILE).toURI())));
 			
-			Scanner sc = new Scanner(this.getClass().getResourceAsStream("/" + Configuration.DEFAULTS_BASH));
+			Scanner sc = new Scanner(Configuration.getStream(Configuration.DEFAULTS_BASH));
 			
 			while (sc.hasNextLine())
 				baseFile += sc.nextLine() + "\n";

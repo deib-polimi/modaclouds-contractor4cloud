@@ -15,7 +15,7 @@ public class ModelCMPL extends Model {
 			
 			String baseFile = "";
 			
-			Scanner sc = new Scanner(this.getClass().getResourceAsStream("/" + Configuration.RUN_MODEL_CMPL));
+			Scanner sc = new Scanner(Configuration.getStream(Configuration.RUN_MODEL_CMPL));
 			
 			while (sc.hasNextLine())
 				baseFile += sc.nextLine() + "\n";

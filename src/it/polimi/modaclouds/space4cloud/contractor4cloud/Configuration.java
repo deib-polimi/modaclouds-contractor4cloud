@@ -8,6 +8,7 @@ import it.polimi.modaclouds.qos_models.util.XMLHelper;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,15 @@ public class Configuration {
 	// Information about the private cloud
 	public static boolean USE_PRIVATE_CLOUD = true;
 	public static String PRIVATE_CLOUD_HOSTS;
+	
+	public static final String SUFFIX = "-C4C";
+	
+	public static InputStream getStream(String file) {
+		InputStream res = Configuration.class.getResourceAsStream("/" + file + SUFFIX);
+		if (res == null)
+			res = Configuration.class.getResourceAsStream("/" + file);
+		return res;
+	}
 	
 	// Information used in the AMPL.run file
 	public static String DEFAULTS_WORKING_DIRECTORY = "/tmp/s4c"; //upload directory on AMPL server
