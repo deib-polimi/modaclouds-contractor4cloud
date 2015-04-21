@@ -143,8 +143,10 @@ public abstract class Result {
 			List<ContractType> contracts = p.getContract();
 			for (ContractType c : contracts) {
 				double initialCost = c.getInitialCost();
+				int daysOfContract = 365;
 				if (c.getContractType().indexOf("3year") > -1)
-					initialCost *= 3;
+					daysOfContract *= 3;
+				initialCost *= Math.ceil(daysOfContract / daysConsidered);
 				
 				initialCost /= daysConsidered * 24;
 				
