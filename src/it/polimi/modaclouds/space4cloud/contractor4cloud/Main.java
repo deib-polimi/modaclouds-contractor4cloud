@@ -10,14 +10,10 @@ public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	
 	public static void doMain(String configuration, String solution) {
-		int daysConsidered = 400;
-		double percentageOfS = 0.5;
-		double m = 1000.0;
-		
-		doMain(configuration, solution, daysConsidered, percentageOfS, m);
+		doMain(configuration, solution, 1000.0);
 	}
 	
-	public static void doMain(String configuration, String solution, int daysConsidered, double percentageOfS, double m) {
+	public static void doMain(String configuration, String solution, double m) {
 		if (configuration == null || !new File(configuration).exists()) {
 			logger.error("The configuration file doesn't exist! Exiting...");
 			return;
@@ -31,7 +27,7 @@ public class Main {
 		Contractor.removeTempFiles = false;
 		
 		try {
-			File f = Contractor.perform(configuration, solution, daysConsidered, percentageOfS, m);
+			File f = Contractor.perform(configuration, solution, m);
 			if (f != null && f.exists())
 				logger.debug("Solution: " + f.getAbsolutePath());
 			else
@@ -54,7 +50,7 @@ public class Main {
 		String configuration  = basePath + "s4c.properties";
 		String solution       = basePath + "solution.xml";
 
-		doMain(configuration, solution, 1080, 0.15, 1000.0);
+		doMain(configuration, solution, 1000.0);
 	}
 	
 	public static void main(String[] args) {

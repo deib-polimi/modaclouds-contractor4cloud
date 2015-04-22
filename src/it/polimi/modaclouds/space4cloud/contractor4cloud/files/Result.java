@@ -70,7 +70,7 @@ public abstract class Result {
 			updateTotalCosts();
 			
 			// Write to File
-			File f = Paths.get(path.toString(), Configuration.GENERATED_COSTS).toFile();
+			File f = Paths.get(path.toString(), Configuration.COSTS_FILE_NAME + Configuration.COSTS_FILE_EXTENSION).toFile();
 			m.marshal(costs, f);
 			
 			return f;

@@ -29,7 +29,7 @@ public class Contractor {
 	private double percentageOfS;
 	private double m;
 	
-	public Contractor(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
+	public Contractor(String configurationFile, String solutionFile, double m) throws Contractor4CloudException {
 		try {
 			Configuration.loadConfiguration(configurationFile);
 		} catch (Exception e) {
@@ -45,8 +45,8 @@ public class Contractor {
 				throw new Contractor4CloudException("Error with the solution!");
 		}
 		
-		this.daysConsidered = daysConsidered;
-		this.percentageOfS = percentageOfS;
+		this.daysConsidered = Configuration.ROBUSTNESS_H;
+		this.percentageOfS = Configuration.ROBUSTNESS_Q;
 		this.m = m;
 	}
 	
@@ -140,8 +140,8 @@ public class Contractor {
 		}
 	}
 
-	public static File perform(String configurationFile, String solutionFile, String basePath, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
-		Contractor pc = new Contractor(configurationFile, solutionFile, daysConsidered, percentageOfS, m);
+	public static File perform(String configurationFile, String solutionFile, String basePath, double m) throws Contractor4CloudException {
+		Contractor pc = new Contractor(configurationFile, solutionFile, m);
 		
 		Path path = null;
 		if (basePath != null && basePath.length() > 0) {
@@ -154,7 +154,7 @@ public class Contractor {
 		
 	}
 	
-	public static File perform(String configurationFile, String solutionFile, int daysConsidered, double percentageOfS, double m) throws Contractor4CloudException {
-		return perform(configurationFile, solutionFile, null, daysConsidered, percentageOfS, m);
+	public static File perform(String configurationFile, String solutionFile, double m) throws Contractor4CloudException {
+		return perform(configurationFile, solutionFile, null, m);
 	}
 }

@@ -74,8 +74,12 @@ public class Configuration {
 	public static int CMPL_THREADS = 4;
 	
 	public static Solver MATH_SOLVER = Solver.CMPL;
+
+	public static double ROBUSTNESS_Q = 0.15;
+	public static int ROBUSTNESS_H = 1095;
 	
-	public static final String GENERATED_COSTS = "generated-costs.xml";
+	public static final String COSTS_FILE_NAME = "generated-costs";
+	public static final String COSTS_FILE_EXTENSION = ".xml";
 	
 	public static enum Solver {
 		AMPL("AMPL"), CMPL("CMPL");
@@ -158,6 +162,9 @@ public class Configuration {
 		
 		prop.put("MATH_SOLVER", MATH_SOLVER.getName());
 		
+		prop.put("ROBUSTNESS_Q", Double.toString(ROBUSTNESS_Q));
+		prop.put("ROBUSTNESS_H", Integer.toString(ROBUSTNESS_H));
+		
 		prop.store(fos, "S4C-Contractor configuration properties");
 		fos.flush();
 	}
@@ -195,6 +202,9 @@ public class Configuration {
 		} catch (Exception e) { }
 		
 		MATH_SOLVER = Solver.getByName(prop.getProperty("MATH_SOLVER", MATH_SOLVER.getName()));
+		
+		ROBUSTNESS_Q = Double.parseDouble(prop.getProperty("ROBUSTNESS_Q", String.valueOf(ROBUSTNESS_Q)));
+		ROBUSTNESS_H= Integer.parseInt(prop.getProperty("ROBUSTNESS_H", String.valueOf(ROBUSTNESS_H)));
 		
 	}
 	
