@@ -23,7 +23,13 @@ import java.util.Scanner;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class Result {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Result.class);
+	
 	protected ProblemInstance pi;
 	private Path path;
 	protected int daysConsidered;
@@ -52,7 +58,7 @@ public abstract class Result {
 			
 			in.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while parsing the file.", e);
 		}
 	}
 	
@@ -75,7 +81,7 @@ public abstract class Result {
 			
 			return f;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while exporting the result file.", e);
 		}
 		
 		return null;

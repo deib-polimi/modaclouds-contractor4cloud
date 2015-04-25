@@ -14,7 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Configuration {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Configuration.class);
 	
 	// Information about the application
 	public static String WORKING_DIRECTORY = "space4cloud";
@@ -272,7 +277,7 @@ public class Configuration {
 					return true;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while checking if the problem uses the PaaS.", e);
 			return false;
 		}
 		

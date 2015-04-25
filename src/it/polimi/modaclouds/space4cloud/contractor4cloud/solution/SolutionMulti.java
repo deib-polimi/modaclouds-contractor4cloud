@@ -7,6 +7,7 @@ import it.polimi.modaclouds.qos_models.schema.ReplicaElement;
 import it.polimi.modaclouds.qos_models.schema.ResourceContainer;
 import it.polimi.modaclouds.qos_models.schema.ResourceModelExtension;
 import it.polimi.modaclouds.qos_models.util.XMLHelper;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
 import java.io.File;
 import java.io.Serializable;
@@ -17,13 +18,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -131,8 +136,15 @@ public class SolutionMulti implements Cloneable, Serializable {
 	public SolutionMulti(File solution) {
 		setFrom(solution);
 	}
-
+	
 	public boolean setFrom(File initialSolution) {
+		if (isResourceModelExtension(initialSolution))
+			return setFromResourceModelExtension(initialSolution);
+		else
+			return setFromFileSolution(initialSolution);
+	}
+
+	private boolean setFromResourceModelExtension(File initialSolution) {
 		
 		boolean res = false;
 		
@@ -178,11 +190,104 @@ public class SolutionMulti implements Cloneable, Serializable {
 			res = true;
 			
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while setting from a resource model extension.", e);
 			return false;
 		}
 		
 		return res;
+	}
+	
+	public String getRegion(String providerName, String tierId) {
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(ResourceModelExtension.class);
+			 
+			Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			ResourceModelExtension rme = (ResourceModelExtension) jaxbUnmarshaller.unmarshal(new File(Configuration.RESOURCE_ENVIRONMENT_EXTENSION));
+			
+			List<ResourceContainer> rcs = rme.getResourceContainer();
+			for (ResourceContainer rc : rcs) {
+				if (rc.getId().equals(tierId) && rc.getProvider().equals(providerName)) {
+					Location l = rc.getCloudElement().getLocation();
+					if (l == null)
+						return null;
+					else
+						return l.getRegion();
+				}
+			}
+		} catch (Exception e) {
+			logger.error("Error while getting the region.", e);
+		}
+		
+		return null;
+	}
+	
+	@Deprecated
+	private boolean setFromFileSolution(File initialSolution) {
+	    
+	    boolean res = false;
+	    
+	    try {
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+	                .newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        Document doc = dBuilder.parse(initialSolution);
+	        doc.getDocumentElement().normalize();
+
+	        NodeList tiers = doc.getElementsByTagName("Tier");
+
+	        for (int i = 0; i < tiers.getLength(); ++i) {
+	            Node n = tiers.item(i);
+
+	            if (n.getNodeType() != Node.ELEMENT_NODE)
+	                continue;
+
+	            Element tier = (Element) n;
+	            String provider = tier.getAttribute("providerName");
+	            String tierId = tier.getAttribute("id");
+	            String resourceName = tier.getAttribute("resourceName");
+	            String serviceName = tier.getAttribute("serviceName");
+	            String serviceType = tier.getAttribute("serviceType");
+	            
+	            if (!serviceType.equals("Compute"))
+	                continue;
+	            
+	            String region = getRegion(provider, tierId);
+	            
+	            Solution sol = add(provider, tierId, resourceName, serviceName, serviceType, region);
+	            
+	            Tier t = sol.tiers.get(tierId);
+
+	            Solution solution = get(provider);
+	            if (solution == null)
+	                continue;
+
+	            NodeList hourAllocations = tier
+	                    .getElementsByTagName("HourAllocation");
+
+	            for (int j = 0; j < hourAllocations.getLength(); ++j) {
+	                Node m = hourAllocations.item(j);
+
+	                if (m.getNodeType() != Node.ELEMENT_NODE)
+	                    continue;
+
+	                Element hourAllocation = (Element) m;
+	                int hour = Integer.parseInt(hourAllocation
+	                        .getAttribute("hour"));
+	                int allocation = Integer.parseInt(hourAllocation
+	                        .getAttribute("allocation"));
+	                
+	                t.machines[hour].replicas = allocation;
+	            }
+	        }
+	        
+	        res = true;
+	        
+	    } catch (Exception e) {
+	        logger.error("Error while setting from a file solution.", e);
+	        return false;
+	    }
+	    
+	    return res;
 	}
 	
 	public int getTotalMachines() {
@@ -195,7 +300,6 @@ public class SolutionMulti implements Cloneable, Serializable {
 		return res;
 	}
 	
-//	@SuppressWarnings("unused")
 	public int getTotalTiers() {
 		int res = 0;
 		for (Solution s : solutions.values()) {

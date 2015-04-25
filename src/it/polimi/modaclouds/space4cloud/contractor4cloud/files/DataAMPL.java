@@ -1,15 +1,20 @@
 package it.polimi.modaclouds.space4cloud.contractor4cloud.files;
 
+import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
+
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.List;
 
-import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataAMPL extends Data {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataAMPL.class);
 
 	public DataAMPL(ProblemInstance pi, int daysConsidered,
 			double percentageOfS, double m) {
@@ -74,7 +79,7 @@ public class DataAMPL extends Data {
 			out.flush();
 			out.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while printing the data file.", e);
 			return false;
 		}
 		

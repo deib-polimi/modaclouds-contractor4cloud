@@ -9,7 +9,12 @@ import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DataCMPL extends Data {
+	
+	private static final Logger logger = LoggerFactory.getLogger(DataCMPL.class);
 
 	public DataCMPL(ProblemInstance pi, int daysConsidered,
 			double percentageOfS, double m) {
@@ -74,7 +79,7 @@ public class DataCMPL extends Data {
 			out.flush();
 			out.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while writing the data file.", e);
 			return false;
 		}
 		

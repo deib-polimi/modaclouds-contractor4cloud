@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -32,6 +35,9 @@ import com.jcraft.jsch.Session;
 
 //this class is used to upload files on AMPL server
 public class ScpTo {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ScpTo.class);
+	
 	// main execution function
 	// coping LFile on local machine in RFile on AMPL server
 	public void sendfile(String LFile, String RFile) throws Exception {
@@ -139,7 +145,7 @@ public class ScpTo {
 			session.disconnect();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while sending the file.", e);
 			try {
 				if (fis != null)
 					fis.close();

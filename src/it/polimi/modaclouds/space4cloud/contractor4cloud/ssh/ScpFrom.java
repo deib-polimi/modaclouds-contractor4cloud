@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -32,6 +35,9 @@ import com.jcraft.jsch.Session;
 
 //this class is used to download files from AMPL server
 public class ScpFrom {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ScpFrom.class);
+	
 	// main execution function
 	// coping RFile on AMPL server in LFile on local machine
 	public void receivefile(String LFile, String RFile) throws Exception {
@@ -154,7 +160,7 @@ public class ScpFrom {
 
 			session.disconnect();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while receiving the file.", e);
 			try {
 				if (fos != null)
 					fos.close();
