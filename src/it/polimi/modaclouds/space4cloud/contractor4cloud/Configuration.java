@@ -67,29 +67,29 @@ public class Configuration {
 	}
 	
 	// this function deletes all temp files
-		public static void deleteTempFiles(int datas) {
-			try { // TODO: uses the datas!
-				for (int i = 1; i <= datas; ++i) {
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH + "-" + i));
-					
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE_CMPL + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA_CMPL + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES_CMPL + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG_CMPL + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL_CMPL + "-" + i));
-					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH_CMPL + "-" + i));
-				}
-				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL));
+	public static void deleteTempFiles(int datas) {
+		try { // TODO: uses the datas!
+			for (int i = 1; i <= datas; ++i) {
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH + "-" + i));
 				
-				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER));
-			} catch (IOException e) {
-				logger.error("Error while deleting the temporary files.", e);
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE_CMPL + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA_CMPL + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES_CMPL + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG_CMPL + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL_CMPL + "-" + i));
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH_CMPL + "-" + i));
 			}
+			Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL));
+			
+			Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER));
+		} catch (IOException e) {
+			logger.error("Error while deleting the temporary files.", e);
 		}
+	}
 	
 	// Information used in the AMPL.run file
 	public static String DEFAULTS_WORKING_DIRECTORY = "/tmp/s4c"; //upload directory on AMPL server
