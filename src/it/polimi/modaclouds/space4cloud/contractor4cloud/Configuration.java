@@ -68,7 +68,7 @@ public class Configuration {
 	
 	// this function deletes all temp files
 	public static void deleteTempFiles(int datas) {
-		try { // TODO: uses the datas!
+		try {
 			for (int i = 1; i <= datas; ++i) {
 				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE + "-" + i));
 				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA + "-" + i));
