@@ -24,7 +24,7 @@ public class Main {
 			return;
 		}
 		
-		Contractor.removeTempFiles = false;
+		Contractor.removeTempFiles = true; //false;
 		
 		try {
 			File f = Contractor.perform(configuration, solution, m);
@@ -39,7 +39,7 @@ public class Main {
 	
 	public static void mainConstellation(String[] args) {
 		String basePath       = "/Users/ft/Development/workspace-s4c-runtime/Constellation/";
-		String configuration  = basePath + "OptimizationMacLocal.properties";
+		String configuration  = basePath + "OptimizationMac.properties";
 		String solution       = basePath + "ContainerExtensions/Computed/Solution-Conference-Amazon.xml";
 
 		doMain(configuration, solution);

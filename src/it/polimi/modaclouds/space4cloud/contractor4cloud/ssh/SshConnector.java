@@ -18,6 +18,8 @@ package it.polimi.modaclouds.space4cloud.contractor4cloud.ssh;
 
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
+import java.nio.file.Paths;
+
 //this class is used to create connection to AMPL server (wrapper)
 public abstract class SshConnector {
 	
@@ -41,7 +43,7 @@ public abstract class SshConnector {
 	}
 	
 	public void sendFileToWorkingDir(String file) throws Exception {
-		sendFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
+		sendFile(Paths.get(Configuration.LOCAL_TEMPORARY_FOLDER, file).toString(), Configuration.RUN_WORKING_DIRECTORY + "/" + file);
 		fixFile(Configuration.RUN_WORKING_DIRECTORY, file);
 	}
 	
@@ -54,7 +56,7 @@ public abstract class SshConnector {
 	}
 	
 	public void receiveFileFromWorkingDir(String file) throws Exception {
-		receiveFile(file, Configuration.RUN_WORKING_DIRECTORY + "/" + file);
+		receiveFile(Paths.get(Configuration.LOCAL_TEMPORARY_FOLDER, file).toString(), Configuration.RUN_WORKING_DIRECTORY + "/" + file);
 	}
 	
 	private void fixFile(String folder, String file) throws Exception {

@@ -4,6 +4,7 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class BashAMPL extends Bash {
@@ -12,7 +13,7 @@ public class BashAMPL extends Bash {
 	public boolean print(String file, int i) {
 		
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter(file + "-" + i));
+			PrintWriter out = new PrintWriter(new FileWriter(Paths.get(Configuration.LOCAL_TEMPORARY_FOLDER, file + "-" + i).toFile()));
 			
 			String baseFile = ""; //new String(Files.readAllBytes(Paths.get(Configuration.DEFAULTS_FOLDER, Configuration.RUN_FILE))); //, Charset.defaultCharset()); // StandardCharsets.UTF_8);
 			

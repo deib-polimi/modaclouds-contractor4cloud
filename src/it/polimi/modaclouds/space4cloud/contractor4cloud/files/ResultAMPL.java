@@ -13,6 +13,7 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -107,7 +108,7 @@ public class ResultAMPL extends Result {
 		List<ProblemInstance> pis = ProblemInstance.getProblemInstances(solution);
 		ResultAMPL result = new ResultAMPL(path, daysConsidered);
 		for (int i = 0; i < pis.size(); ++i) {
-			result.parse(pis.get(i), Configuration.RUN_RES + "-" + (i+1));
+			result.parse(pis.get(i), Paths.get(Configuration.LOCAL_TEMPORARY_FOLDER, Configuration.RUN_RES + "-" + (i+1)).toString());
 		}
 		return result.export();
 	}

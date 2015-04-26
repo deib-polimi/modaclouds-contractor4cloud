@@ -6,6 +6,7 @@ import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class DataCMPL extends Data {
 //		PrintWriter out = new PrintWriter(sw);
 		
 		try {
-			PrintWriter out = new PrintWriter(new FileWriter(file + "-" + u));
+			PrintWriter out = new PrintWriter(new FileWriter(Paths.get(Configuration.LOCAL_TEMPORARY_FOLDER, file + "-" + u).toFile()));
 			
 			DecimalFormat doubleFormatter = doubleFormatter();
 		

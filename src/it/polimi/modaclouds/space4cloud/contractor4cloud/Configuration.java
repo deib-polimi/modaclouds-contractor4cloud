@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,41 @@ public class Configuration {
 			res = Configuration.class.getResourceAsStream("/" + file);
 		return res;
 	}
+	
+	public static String LOCAL_TEMPORARY_FOLDER;
+	static {
+		try {
+			LOCAL_TEMPORARY_FOLDER = Files.createTempDirectory("c4c").toString();
+		} catch (Exception e) {
+			logger.error("Error while creating a temporary folder.", e);
+			LOCAL_TEMPORARY_FOLDER = ".";
+		}
+	}
+	
+	// this function deletes all temp files
+		public static void deleteTempFiles(int datas) {
+			try { // TODO: uses the datas!
+				for (int i = 1; i <= datas; ++i) {
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH + "-" + i));
+					
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_FILE_CMPL + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_DATA_CMPL + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_RES_CMPL + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_LOG_CMPL + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL_CMPL + "-" + i));
+					Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, DEFAULTS_BASH_CMPL + "-" + i));
+				}
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER, RUN_MODEL));
+				
+				Files.deleteIfExists(Paths.get(LOCAL_TEMPORARY_FOLDER));
+			} catch (IOException e) {
+				logger.error("Error while deleting the temporary files.", e);
+			}
+		}
 	
 	// Information used in the AMPL.run file
 	public static String DEFAULTS_WORKING_DIRECTORY = "/tmp/s4c"; //upload directory on AMPL server
