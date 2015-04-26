@@ -88,7 +88,7 @@ public class Contractor {
 		if (solutionFile != null)
 			return solutionFile;
 		
-		Configuration.RUN_WORKING_DIRECTORY = Configuration.DEFAULTS_WORKING_DIRECTORY + Configuration.DEFAULTS_WORKING_DIRECTORY_SUFFIX + "/" + getDate();
+		Configuration.setWorkingSubDirectory(getDate());
 		
 		int datas = 0;
 		

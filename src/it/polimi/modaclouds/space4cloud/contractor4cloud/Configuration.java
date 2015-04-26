@@ -56,16 +56,6 @@ public class Configuration {
 		return res;
 	}
 	
-	public static String LOCAL_TEMPORARY_FOLDER;
-	static {
-		try {
-			LOCAL_TEMPORARY_FOLDER = Files.createTempDirectory("c4c").toString();
-		} catch (Exception e) {
-			logger.error("Error while creating a temporary folder.", e);
-			LOCAL_TEMPORARY_FOLDER = ".";
-		}
-	}
-	
 	// this function deletes all temp files
 	public static void deleteTempFiles(int datas) {
 		try {
@@ -93,7 +83,25 @@ public class Configuration {
 	
 	// Information used in the AMPL.run file
 	public static String DEFAULTS_WORKING_DIRECTORY = "/tmp/s4c"; //upload directory on AMPL server
-	public static final String DEFAULTS_WORKING_DIRECTORY_SUFFIX = "/contractor4cloud";
+	public static final String DEFAULTS_WORKING_DIRECTORY_SUFFIX = "contractor4cloud";
+	
+	public static String LOCAL_TEMPORARY_FOLDER;
+	static {
+		try {
+			LOCAL_TEMPORARY_FOLDER = Files.createTempDirectory(DEFAULTS_WORKING_DIRECTORY_SUFFIX).toString();
+		} catch (Exception e) {
+			logger.error("Error while creating a temporary folder.", e);
+			LOCAL_TEMPORARY_FOLDER = ".";
+		}
+	}
+	
+	public static void setWorkingSubDirectory(String date) {
+		if (isRunningLocally())
+			RUN_WORKING_DIRECTORY = LOCAL_TEMPORARY_FOLDER;
+		else
+			RUN_WORKING_DIRECTORY = DEFAULTS_WORKING_DIRECTORY + "/" + DEFAULTS_WORKING_DIRECTORY_SUFFIX + "/" + date;
+	}
+	
 	public static String RUN_WORKING_DIRECTORY = DEFAULTS_WORKING_DIRECTORY;
 	public static final String RUN_FILE = "AMPL.run";
 	public static final String RUN_MODEL = "modelcontracts.mod";
@@ -193,7 +201,7 @@ public class Configuration {
 		prop.put("USE_PRIVATE_CLOUD", Boolean.toString(USE_PRIVATE_CLOUD));
 		prop.put("PRIVATE_CLOUD_HOSTS", PRIVATE_CLOUD_HOSTS);
 		
-		prop.put("RUN_WORKING_DIRECTORY", RUN_WORKING_DIRECTORY);
+		prop.put("DEFAULTS_WORKING_DIRECTORY", DEFAULTS_WORKING_DIRECTORY);
 		prop.put("RUN_SOLVER", RUN_SOLVER);
 		prop.put("RUN_AMPL_FOLDER", RUN_AMPL_FOLDER);
 		
@@ -232,7 +240,7 @@ public class Configuration {
 		USE_PRIVATE_CLOUD = Boolean.parseBoolean(prop.getProperty("USE_PRIVATE_CLOUD", String.valueOf(USE_PRIVATE_CLOUD)));
 		PRIVATE_CLOUD_HOSTS = prop.getProperty("PRIVATE_CLOUD_HOSTS", PRIVATE_CLOUD_HOSTS);
 		
-		RUN_WORKING_DIRECTORY = prop.getProperty("RUN_WORKING_DIRECTORY", RUN_WORKING_DIRECTORY);
+		DEFAULTS_WORKING_DIRECTORY = prop.getProperty("DEFAULTS_WORKING_DIRECTORY", DEFAULTS_WORKING_DIRECTORY);
 		RUN_SOLVER = prop.getProperty("RUN_SOLVER", RUN_SOLVER);
 		RUN_AMPL_FOLDER = prop.getProperty("RUN_AMPL_FOLDER", RUN_AMPL_FOLDER);
 		
