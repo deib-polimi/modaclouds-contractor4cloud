@@ -24,7 +24,7 @@ public class Main {
 			return;
 		}
 		
-		Contractor.removeTempFiles = true; //false;
+		Contractor.removeTempFiles = false;
 		
 		try {
 			File f = Contractor.perform(configuration, solution, m);
