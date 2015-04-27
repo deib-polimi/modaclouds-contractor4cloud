@@ -7,7 +7,6 @@ import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
 import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
 import it.polimi.modaclouds.qos_models.schema.HourPriceType;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
@@ -87,24 +86,24 @@ public class ResultCMPL extends Result {
 			
 			requests.getHourRequest().add(request);
 		} else if (Pattern.matches("R\\[c[0-9]+,t[0-9]+\\]", name)) {
+			Providers p = getActualProvider();
 			
+			ContractType contract = getContract(c, p);
+			HourPriceType hour = null;
+			for (HourPriceType h : contract.getHourPrice())
+				if (h.getHour() == t)
+					hour = h;
+			
+			float cost = contract.getHourCost() * value;
+			
+			hour.setCost(hour.getCost() + cost);
+
+			contract.setTotalCost(contract.getTotalCost() + cost);
 		} else if (Pattern.matches("X\\[c[0-9]+\\]", name)) {
 			Providers p = getActualProvider();
 			
-			ContractType contract = new ContractType();
-			contract.setHourCost(pi.getHourlyCostsReserved().get(c).floatValue());
-			contract.setInitialCost(pi.getInitialCostsReserved(daysConsidered).get(c).floatValue());
-			contract.setReplicas(value);
-			int i = 0;
-			for (QueryDictionary.ReservedYears ry : QueryDictionary.ReservedYears.values())
-				for (QueryDictionary.ReservedUsage ru : QueryDictionary.ReservedUsage.values()) {
-					if (i == c)
-						contract.setContractType(ry.getName() + "_" + ru.getName());
-					i++;
-				}
-			contract.setInstanceType(pi.getResourceName());
-			
-			p.getContract().add(contract);
+			ContractType contract = getContract(c, p);
+			contract.setMaxReplicas(value);
 		}
 	}
 	

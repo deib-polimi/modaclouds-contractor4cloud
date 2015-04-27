@@ -8,6 +8,7 @@ import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
 import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
 import it.polimi.modaclouds.qos_models.schema.HourPriceType;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
+import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
@@ -36,6 +37,8 @@ public abstract class Result {
 	
 	private Costs costs;
 	
+	private Map<Integer, ContractType> contracts;
+	
 	public Result(Path path, int daysConsidered) {
 		pi = null;
 		this.path = path;
@@ -43,6 +46,41 @@ public abstract class Result {
 		
 		costs = new Costs();
 		costs.setSolutionID(hashCode() + "");
+		
+		contracts = new HashMap<Integer, ContractType>();
+	}
+	
+	protected ContractType getContract(int c, Providers p) {
+		ContractType contract = contracts.get(c);
+		if (contract != null)
+			return contract;
+				
+		contract = new ContractType();
+		contract.setHourCost(pi.getHourlyCostsReserved().get(c).floatValue());
+		contract.setInitialCost(pi.getInitialCostsReserved(daysConsidered).get(c).floatValue());
+		
+		int i = 0;
+		for (QueryDictionary.ReservedYears ry : QueryDictionary.ReservedYears.values())
+			for (QueryDictionary.ReservedUsage ru : QueryDictionary.ReservedUsage.values()) {
+				if (i == c)
+					contract.setContractType(ry.getName() + "_" + ru.getName());
+				i++;
+			}
+		contract.setInstanceType(pi.getResourceName());
+		
+		contract.setTotalCost(0);
+		
+		for (int h = 0; h < 24; ++h) {
+			HourPriceType hour = new HourPriceType();
+			hour.setHour(h);
+			hour.setCost(0);
+			contract.getHourPrice().add(hour);
+		}
+		
+		p.getContract().add(contract);
+		
+		contracts.put(c, contract);
+		return contract;
 	}
 	
 	public void parse(ProblemInstance pi, String file) {
@@ -133,7 +171,7 @@ public abstract class Result {
 	
 	private void updateTotalCosts() {
 		CostType total = new CostType();
-		double totalCost = 0;
+		float totalCost = 0;
 		for (int h = 0; h < 24; ++h) {
 			HourPriceType hour = new HourPriceType();
 			hour.setHour(h);
@@ -156,8 +194,14 @@ public abstract class Result {
 				
 				initialCost /= daysConsidered * 24;
 				
-				for (HourPriceType hour : total.getHourPrice())
-					hour.setCost(hour.getCost() + initialCost + c.getHourCost()*c.getReplicas());
+				for (HourPriceType hour : total.getHourPrice()) {
+					HourPriceType contractHour = null;
+					for (HourPriceType tmp : c.getHourPrice())
+						if (tmp.getHour() == hour.getHour())
+							contractHour = tmp;
+					
+					hour.setCost((float) (hour.getCost() + initialCost + contractHour.getCost()));
+				}
 			}
 			
 			List<SpotRequests> spots = p.getSpotRequests();

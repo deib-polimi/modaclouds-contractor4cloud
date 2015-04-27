@@ -7,7 +7,6 @@ import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests;
 import it.polimi.modaclouds.qos_models.schema.Costs.Providers.SpotRequests.HourRequest;
 import it.polimi.modaclouds.qos_models.schema.HourPriceType;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.Configuration;
-import it.polimi.modaclouds.space4cloud.contractor4cloud.db.QueryDictionary;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.ProblemInstance;
 import it.polimi.modaclouds.space4cloud.contractor4cloud.solution.SolutionMulti;
 
@@ -25,13 +24,26 @@ public class ResultAMPL extends Result {
 	
 	@Override
 	public void match(String s) {
+		int value = 0;
+		try {
+			value = Integer.parseInt(s.split("=")[1].trim());
+		} catch (Exception e) { }
+		
+		String[] comps = s.split("'");
+		
+		int c = -1, t = -1;
+		
+		for (String el : comps)
+			switch (el.charAt(0)) {
+			case 'c':
+				c = Integer.parseInt(el.substring(1)) - 1;
+				break;
+			case 't':
+				t = Integer.parseInt(el.substring(1)) - 1;
+				break;
+			}
+		
 		if (Pattern.matches("D\\['t[0-9]+'\\] = [0-9]+", s)) {
-			String[] ss = s.split("'");
-			
-			int t = Integer.parseInt(ss[1].substring(1)) - 1;
-			
-			int value = Integer.parseInt(s.split("=")[1].trim());
-			
 			Providers p = getActualProvider();
 			CostType ctp = p.getCost();
 			
@@ -47,12 +59,6 @@ public class ResultAMPL extends Result {
 			ctp.setTotalCost(ctp.getTotalCost() + cost);
 			
 		} else if (Pattern.matches("S\\['t[0-9]+'\\] = [0-9]+", s)) {
-			String[] ss = s.split("'");
-			
-			int t = Integer.parseInt(ss[1].substring(1)) - 1;
-			
-			int value = Integer.parseInt(s.split("=")[1].trim());
-			
 			Providers p = getActualProvider();
 			
 			SpotRequests requests = spotRequests.get(pi.getResourceName());
@@ -70,37 +76,24 @@ public class ResultAMPL extends Result {
 			
 			requests.getHourRequest().add(request);
 		} else if (Pattern.matches("R\\['c[0-9]+','t[0-9]+'\\] = [0-9]+", s)) {
-//			String[] ss = s.split("'");
-//			
-//			int c = Integer.parseInt(ss[1].substring(1)) - 1;
-//			int t = Integer.parseInt(ss[3].substring(1)) - 1;
-//			
-//			int value = Integer.parseInt(s.split("=")[1].trim());
-//			
-//			System.out.printf("R: %d, %d, %d\n", t, c, value);
-		} else if (Pattern.matches("X\\['c[0-9]+'\\] = [0-9]+", s)) {
-			String[] ss = s.split("'");
-			
-			int c = Integer.parseInt(ss[1].substring(1)) - 1;
-			
-			int value = Integer.parseInt(s.split("=")[1].trim());
-			
 			Providers p = getActualProvider();
 			
-			ContractType contract = new ContractType();
-			contract.setHourCost(pi.getHourlyCostsReserved().get(c).floatValue());
-			contract.setInitialCost(pi.getInitialCostsReserved(daysConsidered).get(c).floatValue());
-			contract.setReplicas(value);
-			int i = 0;
-			for (QueryDictionary.ReservedYears ry : QueryDictionary.ReservedYears.values())
-				for (QueryDictionary.ReservedUsage ru : QueryDictionary.ReservedUsage.values()) {
-					if (i == c)
-						contract.setContractType(ry.getName() + "_" + ru.getName());
-					i++;
-				}
-			contract.setInstanceType(pi.getResourceName());
+			ContractType contract = getContract(c, p);
+			HourPriceType hour = null;
+			for (HourPriceType h : contract.getHourPrice())
+				if (h.getHour() == t)
+					hour = h;
 			
-			p.getContract().add(contract);
+			float cost = contract.getHourCost() * value;
+			
+			hour.setCost(hour.getCost() + cost);
+
+			contract.setTotalCost(contract.getTotalCost() + cost);
+		} else if (Pattern.matches("X\\['c[0-9]+'\\] = [0-9]+", s)) {
+			Providers p = getActualProvider();
+			
+			ContractType contract = getContract(c, p);
+			contract.setMaxReplicas(value);
 		}
 	}
 	
