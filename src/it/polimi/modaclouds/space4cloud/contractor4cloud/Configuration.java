@@ -86,14 +86,6 @@ public class Configuration {
 	public static final String DEFAULTS_WORKING_DIRECTORY_SUFFIX = "contractor4cloud";
 	
 	public static String LOCAL_TEMPORARY_FOLDER;
-	static {
-		try {
-			LOCAL_TEMPORARY_FOLDER = Files.createTempDirectory(DEFAULTS_WORKING_DIRECTORY_SUFFIX).toString();
-		} catch (Exception e) {
-			logger.error("Error while creating a temporary folder.", e);
-			LOCAL_TEMPORARY_FOLDER = ".";
-		}
-	}
 	
 	public static void setWorkingSubDirectory(String date) {
 		if (isRunningLocally())
@@ -254,6 +246,13 @@ public class Configuration {
 		
 		ROBUSTNESS_Q = Double.parseDouble(prop.getProperty("ROBUSTNESS_Q", String.valueOf(ROBUSTNESS_Q)));
 		ROBUSTNESS_H= Integer.parseInt(prop.getProperty("ROBUSTNESS_H", String.valueOf(ROBUSTNESS_H)));
+		
+		try {
+			LOCAL_TEMPORARY_FOLDER = Files.createTempDirectory(DEFAULTS_WORKING_DIRECTORY_SUFFIX).toString();
+		} catch (Exception e) {
+			logger.error("Error while creating a temporary folder.", e);
+			LOCAL_TEMPORARY_FOLDER = ".";
+		}
 		
 	}
 	

@@ -47,8 +47,8 @@ public class Main {
 	
 	public static void mainUff(String[] args) {
 		String basePath       = "/Users/ft/Desktop/tmp/trash/";
-		String configuration  = basePath + "s4c.properties";
-		String solution       = basePath + "solution-5500.xml";
+		String configuration  = basePath + "s4cBoh.properties";
+		String solution       = basePath + "solutionBoh.xml";
 
 		doMain(configuration, solution, 1000.0);
 	}
