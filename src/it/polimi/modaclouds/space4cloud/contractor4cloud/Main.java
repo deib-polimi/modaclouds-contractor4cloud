@@ -53,9 +53,12 @@ public class Main {
 	public static void mainUff(String[] args) {
 		String basePath       = "/Users/ft/Desktop/tmp/trash/";
 		String configuration  = basePath + "s4c.properties";
-		String solution       = basePath + "solution-5500.xml";
+		String solution       = basePath + "solutionMulti.xml";
+		
+		File f = Paths.get(solution).toFile();
 
-		doMain(configuration, solution, Paths.get(solution).getParent().toString(), 1000.0);
+		File res = doMain(configuration, solution, Paths.get(solution).getParent().toString(), 1000.0);
+		res.renameTo(Paths.get(f.getParent(), f.getName().replaceAll("solution", "generated-costs")).toFile());
 	}
 	
 	public static void mainUffFolder(String[] args) {

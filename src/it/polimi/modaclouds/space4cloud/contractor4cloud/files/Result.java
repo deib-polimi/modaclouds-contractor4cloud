@@ -37,7 +37,7 @@ public abstract class Result {
 	
 	private Costs costs;
 	
-	private Map<Integer, ContractType> contracts;
+	private Map<String, ContractType> contracts;
 	
 	public Result(Path path, int daysConsidered) {
 		pi = null;
@@ -47,14 +47,14 @@ public abstract class Result {
 		costs = new Costs();
 		costs.setSolutionID(hashCode() + "");
 		
-		contracts = new HashMap<Integer, ContractType>();
+		contracts = new HashMap<String, ContractType>();
 	}
 	
 	protected ContractType getContract(int c, Providers p) {
-		ContractType contract = contracts.get(c);
+		ContractType contract = contracts.get(c + "@" + pi.getResourceName());
 		if (contract != null)
 			return contract;
-				
+		
 		contract = new ContractType();
 		contract.setHourCost(pi.getHourlyCostsReserved().get(c).floatValue());
 		contract.setInitialCost(pi.getInitialCostsReserved(daysConsidered).get(c).floatValue());
@@ -66,6 +66,7 @@ public abstract class Result {
 					contract.setContractType(ry.getName() + "_" + ru.getName());
 				i++;
 			}
+		
 		contract.setInstanceType(pi.getResourceName());
 		
 		contract.setTotalCost(0);
@@ -79,7 +80,7 @@ public abstract class Result {
 		
 		p.getContract().add(contract);
 		
-		contracts.put(c, contract);
+		contracts.put(c + "@" + pi.getResourceName(), contract);
 		return contract;
 	}
 	
