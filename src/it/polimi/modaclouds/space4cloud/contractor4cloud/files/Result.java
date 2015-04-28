@@ -171,7 +171,7 @@ public abstract class Result {
 	
 	private void updateTotalCosts() {
 		CostType total = new CostType();
-		float totalCost = 0;
+		double totalCost = 0;
 		for (int h = 0; h < 24; ++h) {
 			HourPriceType hour = new HourPriceType();
 			hour.setHour(h);
@@ -191,6 +191,7 @@ public abstract class Result {
 				if (c.getContractType().indexOf("3year") > -1)
 					daysOfContract *= 3;
 				initialCost *= Math.ceil(daysOfContract / daysConsidered);
+				initialCost *= c.getMaxReplicas();
 				
 				initialCost /= daysConsidered * 24;
 				
