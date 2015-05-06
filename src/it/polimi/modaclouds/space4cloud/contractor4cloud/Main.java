@@ -11,10 +11,6 @@ public class Main {
 
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 	
-	public static File doMain(String configuration, String solution, String path) {
-		return doMain(configuration, solution, path, 1000.0);
-	}
-	
 	public static File doMain(String configuration, String solution, String path, double m) {
 		if (configuration == null || !new File(configuration).exists()) {
 			logger.error("The configuration file doesn't exist! Exiting...");
@@ -42,15 +38,7 @@ public class Main {
 		return null;
 	}
 	
-	public static void mainConstellation(String[] args) {
-		String basePath       = "/Users/ft/Development/workspace-s4c-runtime/Constellation/";
-		String configuration  = basePath + "OptimizationMac.properties";
-		String solution       = basePath + "ContainerExtensions/Computed/Solution-Conference-Amazon.xml";
-
-		doMain(configuration, solution, null);
-	}
-	
-	public static void mainUff(String[] args) {
+	public static void mainSingleInstance(String[] args) {
 		String basePath       = "/Users/ft/Desktop/tmp/trash/";
 		String configuration  = basePath + "s4c.properties";
 		String solution       = basePath + "solutionMulti.xml";
@@ -61,7 +49,7 @@ public class Main {
 		res.renameTo(Paths.get(f.getParent(), f.getName().replaceAll("solution", "generated-costs")).toFile());
 	}
 	
-	public static void mainUffFolder(String[] args) {
+	public static void mainFolder(String[] args) {
 		String basePath       = "/Users/ft/Downloads/ConstellationSaraNew1/";
 		String configuration  = "/Users/ft/Desktop/tmp/trash/s4cRemote.properties";
 		
@@ -99,7 +87,6 @@ public class Main {
 	}
 	
 	public static void main(String[] args) {
-//		mainConstellation(args);
-		mainUff(args);
+		mainSingleInstance(args);
 	}
 }
